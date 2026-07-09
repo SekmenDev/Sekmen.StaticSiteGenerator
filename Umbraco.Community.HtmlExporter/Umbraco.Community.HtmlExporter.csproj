@@ -26,6 +26,10 @@
         <PublicSign>true</PublicSign>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.AspNetCore.OpenApi.Generated</InterceptorsNamespaces>
+    </PropertyGroup>
+
     <ItemGroup>
         <None Include="..\logo.png">
             <Pack>True</Pack>
