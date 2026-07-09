@@ -373,7 +373,6 @@ const re = async (r, e) => {
       case "cookie":
         e.headers.append("Cookie", `${n}=${a}`);
         break;
-      case "header":
       default:
         e.headers.set(n, a);
         break;
@@ -509,7 +508,6 @@ const oe = () => ({
           case "stream":
             g = l.body;
             break;
-          case "json":
           default:
             g = {};
             break;
@@ -605,4 +603,4 @@ export {
   ue as c,
   de as f
 };
-//# sourceMappingURL=client.gen-Cs-igdZt.js.map
+//# sourceMappingURL=client.gen-miud6JxX.js.map
