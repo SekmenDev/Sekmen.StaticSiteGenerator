@@ -1,7 +1,7 @@
-import { LitElement as D, html as f, css as R, state as S, customElement as $ } from "@umbraco-cms/backoffice/external/lit";
-import { UmbElementMixin as V } from "@umbraco-cms/backoffice/element-api";
+import { LitElement as D, html as f, css as R, state as S, customElement as V } from "@umbraco-cms/backoffice/external/lit";
+import { UmbElementMixin as $ } from "@umbraco-cms/backoffice/element-api";
 import { UMB_NOTIFICATION_CONTEXT as T } from "@umbraco-cms/backoffice/notification";
-import { c as g, f as C } from "./client.gen-Cs-igdZt.js";
+import { c as g, f as C } from "./client.gen-miud6JxX.js";
 class v {
   static exportWebsite(e) {
     return (e?.client ?? g).post({
@@ -40,7 +40,7 @@ var F = Object.defineProperty, O = Object.getOwnPropertyDescriptor, b = (t) => {
     (n = t[o]) && (s = (u ? n(e, r, s) : n(s)) || s);
   return u && s && F(e, r, s), s;
 }, E = (t, e, r) => e.has(t) || b("Cannot " + r), l = (t, e, r) => (E(t, e, "read from private field"), e.get(t)), y = (t, e, r) => e.has(t) ? b("Cannot add the same private member more than once") : e instanceof WeakSet ? e.add(t) : e.set(t, r), L = (t, e, r, u) => (E(t, e, "write to private field"), e.set(t, r), r), a, c;
-let d = class extends V(D) {
+let d = class extends $(D) {
   constructor() {
     super(), y(this, a), y(this, c, async (t) => {
       const e = t.target;
@@ -233,11 +233,11 @@ x([
   S()
 ], d.prototype, "_serverDomainData", 2);
 d = x([
-  $("html-exporter-dashboard")
+  V("html-exporter-dashboard")
 ], d);
 const P = d;
 export {
   d as HtmlExporterDashboardElement,
   P as default
 };
-//# sourceMappingURL=dashboard.element-DdLGqyku.js.map
+//# sourceMappingURL=dashboard.element-BdwPAFlY.js.map
