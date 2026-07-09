@@ -42,10 +42,8 @@ public static class Functions
                 // Normalize and filter URLs
                 if (href.StartsWith('#') || href.StartsWith("mailto:") || href.StartsWith("tel:")) 
                     continue;
-                if (href.StartsWith("http://") || href.StartsWith("https://") || href.StartsWith("www.")) 
+                if (href.StartsWith("//") || href.StartsWith("http://") || href.StartsWith("https://") || href.StartsWith("www.")) 
                     continue;
-                if (href.StartsWith("//")) 
-                    href = "https:" + href;
                 if (!href.StartsWith('/')) 
                     continue;
 
