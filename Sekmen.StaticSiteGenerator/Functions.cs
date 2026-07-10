@@ -115,6 +115,7 @@ public static class Functions
                 linkIndex++;
                 string href = link.GetAttributeValue("href", string.Empty);
                 if (!string.IsNullOrWhiteSpace(href) &&
+                    !href.StartsWith("//") &&
                     (href.StartsWith('/') || href.StartsWith(baseUri.AbsoluteUri)) &&
                     !href.Equals(baseUri.AbsoluteUri))
                 {
@@ -137,7 +138,8 @@ public static class Functions
         {
             string src = script.GetAttributeValue("src", string.Empty);
             if (!string.IsNullOrWhiteSpace(src) &&
-                (src.StartsWith('/') || src.StartsWith(baseUri.AbsoluteUri)))
+                    !src.StartsWith("//") &&
+                    (src.StartsWith('/') || src.StartsWith(baseUri.AbsoluteUri)))
                 resources.Add(src);
         }
 
@@ -146,7 +148,8 @@ public static class Functions
         {
             string src = img.GetAttributeValue("src", string.Empty);
             if (!string.IsNullOrWhiteSpace(src) &&
-                (src.StartsWith('/') || src.StartsWith(baseUri.AbsoluteUri)))
+                    !src.StartsWith("//") &&
+                    (src.StartsWith('/') || src.StartsWith(baseUri.AbsoluteUri)))
                 resources.Add(src);
         }
 
