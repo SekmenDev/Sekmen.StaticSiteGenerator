@@ -77,8 +77,15 @@ public static class Functions
                 Directory.CreateDirectory(Path.GetDirectoryName(pagePath)!);
 
             // Update URLs in HTML content
-            string updatedHtml = html.Replace("\"/", "\"" + command.TargetUrl).Replace("'/", "'" + command.TargetUrl).Replace(sourceUrl, command.TargetUrl);
-            updatedHtml = command.StringReplacements.Aggregate(updatedHtml, (current, replacements) => current.Replace(replacements.OldValue, replacements.NewValue));
+            string updatedHtml = html
+                .Replace("\"" + sourceUrl.Replace("https:", "").Replace("http:", ""), "\"" + command.TargetUrl)
+                .Replace("'" + sourceUrl.Replace("https:", "").Replace("http:", ""), "'" + command.TargetUrl)
+                .Replace("\"/", "\"" + command.TargetUrl)
+                .Replace("'/", "'" + command.TargetUrl)
+                .Replace(sourceUrl, command.TargetUrl);
+            updatedHtml = command.StringReplacements
+                .Aggregate(updatedHtml, (current, replacements) => 
+                    current.Replace(replacements.OldValue, replacements.NewValue));
             await File.WriteAllTextAsync(pagePath, updatedHtml);
             Console.WriteLine($"Page saved: {pagePath}");
 
