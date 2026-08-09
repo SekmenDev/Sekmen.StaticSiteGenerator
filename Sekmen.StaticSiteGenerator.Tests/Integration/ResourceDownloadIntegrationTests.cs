@@ -1,7 +1,5 @@
 namespace Sekmen.StaticSiteGenerator.Tests.Integration;
 
-using Sekmen.StaticSiteGenerator.Tests.Helpers;
-
 public class ResourceDownloadIntegrationTests : IAsyncLifetime
 {
     private readonly TestServerFixture _fixture = new();
@@ -25,12 +23,12 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         // Arrange
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act
@@ -39,7 +37,7 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         // Assert
         string cssFile = Path.Combine(outputFolder, "css", "style.css");
         File.Exists(cssFile).ShouldBeTrue();
-        string content = File.ReadAllText(cssFile);
+        string content = await File.ReadAllTextAsync(cssFile);
         content.ShouldContain("CSS");
         
         // Cleanup
@@ -52,12 +50,12 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         // Arrange
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act
@@ -79,12 +77,12 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         // Arrange
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act
@@ -106,12 +104,12 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         // Arrange
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act
@@ -135,12 +133,12 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         // Arrange
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act - first export
@@ -167,12 +165,12 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         // Arrange
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: new[] { "/special-characters" },
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act
@@ -192,12 +190,12 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         // Arrange
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: new[] { "/missing-resource" },
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act - should not throw even though some resources are missing

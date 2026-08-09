@@ -1,8 +1,5 @@
 namespace Sekmen.StaticSiteGenerator.Tests.Helpers;
 
-using Moq.Protected;
-using Moq;
-
 public class HttpClientMockBuilder
 {
     private readonly Dictionary<string, HttpResponseMessage> _responses = [];

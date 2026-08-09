@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Hosting;
-
 namespace Sekmen.StaticSiteGenerator.Tests.Helpers;
 
 public class TestServerFixture : IAsyncLifetime

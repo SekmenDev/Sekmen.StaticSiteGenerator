@@ -1,7 +1,5 @@
 namespace Sekmen.StaticSiteGenerator.Tests.Integration;
 
-using Sekmen.StaticSiteGenerator.Tests.Helpers;
-
 public class FullExportIntegrationTests : IAsyncLifetime
 {
     private readonly TestServerFixture _fixture = new();
@@ -27,10 +25,10 @@ public class FullExportIntegrationTests : IAsyncLifetime
         
         ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl,
-            AdditionalUrls: new[] { "/404" },
+            AdditionalUrls: ["/404"],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act
@@ -52,21 +50,21 @@ public class FullExportIntegrationTests : IAsyncLifetime
     {
         // Arrange
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        string targetUrl = "https://static.example.com/";
+        const string targetUrl = "https://static.example.com/";
         
         ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl,
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: targetUrl,
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act
         await Functions.ExportWebsite(_client!, command);
         
         // Assert
-        string indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
+        string indexContent = await File.ReadAllTextAsync(Path.Combine(outputFolder, "index.html"));
         indexContent.ShouldContain(targetUrl);
         
         // Cleanup
@@ -79,12 +77,12 @@ public class FullExportIntegrationTests : IAsyncLifetime
         // Arrange
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: _fixture.BaseUrl,
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act
@@ -106,12 +104,12 @@ public class FullExportIntegrationTests : IAsyncLifetime
         // Arrange
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: _fixture.BaseUrl,
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act
@@ -130,12 +128,12 @@ public class FullExportIntegrationTests : IAsyncLifetime
         // Arrange
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: _fixture.BaseUrl,
-            AdditionalUrls: new[] { "/pdf-file" },
+            AdditionalUrls: ["/pdf-file"],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act - should not crash when encountering PDF
@@ -154,12 +152,12 @@ public class FullExportIntegrationTests : IAsyncLifetime
         // Arrange
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: _fixture.BaseUrl,
-            AdditionalUrls: new[] { "/malformed-html" },
+            AdditionalUrls: ["/malformed-html"],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act
@@ -178,12 +176,12 @@ public class FullExportIntegrationTests : IAsyncLifetime
         // Arrange
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: _fixture.BaseUrl,
-            AdditionalUrls: new[] { "/circular-link-a" },
+            AdditionalUrls: ["/circular-link-a"],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act - should complete without hanging
@@ -203,12 +201,12 @@ public class FullExportIntegrationTests : IAsyncLifetime
         // Arrange
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: _fixture.BaseUrl,
-            AdditionalUrls: new[] { "/special-characters" },
+            AdditionalUrls: ["/special-characters"],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act
@@ -216,7 +214,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         
         // Assert
         File.Exists(Path.Combine(outputFolder, "special-characters", "index.html")).ShouldBeTrue();
-        string content = File.ReadAllText(Path.Combine(outputFolder, "special-characters", "index.html"));
+        string content = await File.ReadAllTextAsync(Path.Combine(outputFolder, "special-characters", "index.html"));
         content.ShouldContain("file-name_123.png");
         
         // Cleanup
@@ -229,12 +227,12 @@ public class FullExportIntegrationTests : IAsyncLifetime
         // Arrange
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: _fixture.BaseUrl,
-            AdditionalUrls: new[] { "/missing-resource" },
+            AdditionalUrls: ["/missing-resource"],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act - should not crash when resources return 404

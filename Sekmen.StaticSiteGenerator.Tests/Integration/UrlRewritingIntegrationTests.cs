@@ -1,7 +1,5 @@
 namespace Sekmen.StaticSiteGenerator.Tests.Integration;
 
-using Sekmen.StaticSiteGenerator.Tests.Helpers;
-
 public class UrlRewritingIntegrationTests : IAsyncLifetime
 {
     private readonly TestServerFixture _fixture = new();
