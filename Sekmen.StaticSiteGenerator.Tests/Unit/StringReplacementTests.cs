@@ -6,7 +6,7 @@ public class StringReplacementTests
     public async Task ExportWebsite_AppliesStringReplacementsToContent()
     {
         // Arrange
-        string html = """
+        const string html = """
                       <html>
                       <body>
                           <h1>Welcome to Umbraco CMS</h1>
@@ -15,12 +15,12 @@ public class StringReplacementTests
                       </html>
                       """;
         
-        string sitemapXml = """
-                            <?xml version="1.0" encoding="UTF-8"?>
-                            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-                                <url><loc>https://example.com/</loc></url>
-                            </urlset>
-                            """;
+        const string sitemapXml = """
+                                  <?xml version="1.0" encoding="UTF-8"?>
+                                  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                                      <url><loc>https://example.com/</loc></url>
+                                  </urlset>
+                                  """;
         
         HttpClientMockBuilder mockBuilder = new HttpClientMockBuilder()
             .WithGetResponse("https://example.com/sitemap.xml", sitemapXml, "application/xml")
@@ -29,23 +29,23 @@ public class StringReplacementTests
         HttpClient client = mockBuilder.Build();
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: "example.com",
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: new[]
-            {
+            StringReplacements:
+            [
                 new StringReplacements("Umbraco CMS", "Umbraco"),
                 new StringReplacements("umbraco-cms", "umbraco")
-            }
+            ]
         );
         
         // Act
         await Functions.ExportWebsite(client, command);
         
         // Assert
-        string exportedHtml = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
+        string exportedHtml = await File.ReadAllTextAsync(Path.Combine(outputFolder, "index.html"));
         exportedHtml.ShouldContain("Welcome to Umbraco");
         exportedHtml.ShouldContain("This is umbraco content");
         exportedHtml.ShouldNotContain("Umbraco CMS");
@@ -59,12 +59,12 @@ public class StringReplacementTests
     public async Task ExportWebsite_AppliesStringReplacementsToFilePaths()
     {
         // Arrange
-        string sitemapXml = """
-                            <?xml version="1.0" encoding="UTF-8"?>
-                            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-                                <url><loc>https://example.com/umbraco-cms/page</loc></url>
-                            </urlset>
-                            """;
+        const string sitemapXml = """
+                                  <?xml version="1.0" encoding="UTF-8"?>
+                                  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                                      <url><loc>https://example.com/umbraco-cms/page</loc></url>
+                                  </urlset>
+                                  """;
         
         HttpClientMockBuilder mockBuilder = new HttpClientMockBuilder()
             .WithGetResponse("https://example.com/sitemap.xml", sitemapXml, "application/xml")
@@ -73,15 +73,15 @@ public class StringReplacementTests
         HttpClient client = mockBuilder.Build();
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: "example.com",
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: new[]
-            {
+            StringReplacements:
+            [
                 new StringReplacements("umbraco-cms", "umbraco")
-            }
+            ]
         );
         
         // Act
@@ -98,7 +98,7 @@ public class StringReplacementTests
     public async Task ExportWebsite_WithMultipleReplacements_AppliesInOrder()
     {
         // Arrange
-        string html = """
+        const string html = """
                       <html>
                       <body>
                           <p>This is OLD text OLD</p>
@@ -106,7 +106,7 @@ public class StringReplacementTests
                       </html>
                       """;
         
-        string sitemapXml = """
+        const string sitemapXml = """
                             <?xml version="1.0" encoding="UTF-8"?>
                             <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
                                 <url><loc>https://example.com/</loc></url>
@@ -120,23 +120,23 @@ public class StringReplacementTests
         HttpClient client = mockBuilder.Build();
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: "example.com",
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: new[]
-            {
+            StringReplacements:
+            [
                 new StringReplacements("OLD", "TEMP"),
                 new StringReplacements("TEMP", "NEW")
-            }
+            ]
         );
         
         // Act
         await Functions.ExportWebsite(client, command);
         
         // Assert
-        string exportedHtml = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
+        string exportedHtml = await File.ReadAllTextAsync(Path.Combine(outputFolder, "index.html"));
         exportedHtml.ShouldContain("This is NEW text NEW");
         
         // Cleanup
@@ -147,7 +147,7 @@ public class StringReplacementTests
     public async Task ExportWebsite_WithEmptyReplacements_ShouldNotModifyContent()
     {
         // Arrange
-        string html = """
+        const string html = """
                       <html>
                       <body>
                           <h1>Original Content</h1>
@@ -155,12 +155,12 @@ public class StringReplacementTests
                       </html>
                       """;
         
-        string sitemapXml = """
-                            <?xml version="1.0" encoding="UTF-8"?>
-                            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-                                <url><loc>https://example.com/</loc></url>
-                            </urlset>
-                            """;
+        const string sitemapXml = """
+                                  <?xml version="1.0" encoding="UTF-8"?>
+                                  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                                      <url><loc>https://example.com/</loc></url>
+                                  </urlset>
+                                  """;
         
         HttpClientMockBuilder mockBuilder = new HttpClientMockBuilder()
             .WithGetResponse("https://example.com/sitemap.xml", sitemapXml, "application/xml")
@@ -169,19 +169,19 @@ public class StringReplacementTests
         HttpClient client = mockBuilder.Build();
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: "example.com",
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act
         await Functions.ExportWebsite(client, command);
         
         // Assert
-        string exportedHtml = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
+        string exportedHtml = await File.ReadAllTextAsync(Path.Combine(outputFolder, "index.html"));
         exportedHtml.ShouldContain("Original Content");
         
         // Cleanup

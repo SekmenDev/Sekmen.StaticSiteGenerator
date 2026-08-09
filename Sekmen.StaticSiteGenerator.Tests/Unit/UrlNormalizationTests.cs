@@ -43,12 +43,12 @@ public class UrlNormalizationTests
         HttpClient client = mockBuilder.Build();
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: "example.com",
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act
@@ -77,12 +77,12 @@ public class UrlNormalizationTests
                        </html>
                        """;
         
-        string sitemapXml = """
-                            <?xml version="1.0" encoding="UTF-8"?>
-                            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-                                <url><loc>https://example.com/</loc></url>
-                            </urlset>
-                            """;
+        const string sitemapXml = """
+                                  <?xml version="1.0" encoding="UTF-8"?>
+                                  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                                      <url><loc>https://example.com/</loc></url>
+                                  </urlset>
+                                  """;
         
         HttpClientMockBuilder mockBuilder = new HttpClientMockBuilder()
             .WithGetResponse("https://example.com/sitemap.xml", sitemapXml, "application/xml")
@@ -92,12 +92,12 @@ public class UrlNormalizationTests
         HttpClient client = mockBuilder.Build();
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: "example.com",
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act
@@ -119,7 +119,7 @@ public class UrlNormalizationTests
     public async Task ShouldNormalizePathsCorrectly(string urlPath, string expectedFile)
     {
         // Arrange
-        string sitemapXml = $"""
+        const string sitemapXml = """
                              <?xml version="1.0" encoding="UTF-8"?>
                              <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
                                  <url><loc>https://example.com{urlPath}</loc></url>
@@ -133,12 +133,12 @@ public class UrlNormalizationTests
         HttpClient client = mockBuilder.Build();
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: "example.com",
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act

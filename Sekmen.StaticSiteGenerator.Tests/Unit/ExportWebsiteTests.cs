@@ -35,7 +35,8 @@ public class ExportWebsiteTests
         
         // Assert
         Directory.Exists(outputFolder).ShouldBeTrue();
-        File.Exists(Path.Combine(outputFolder, "index.html")).ShouldBeTrue();
+        File.Exists(Path.Combine(outputFolder, "page1", "index.html")).ShouldBeTrue();
+        File.Exists(Path.Combine(outputFolder, "page2", "index.html")).ShouldBeTrue();
         
         // Cleanup
         Directory.Delete(outputFolder, true);

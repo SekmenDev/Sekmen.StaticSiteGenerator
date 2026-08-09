@@ -6,12 +6,12 @@ public class ErrorHandlingTests
     public async Task ExportWebsite_WithMalformedSitemap_ShouldThrowException()
     {
         // Arrange
-        string malformedSitemap = """
-                                  <?xml version="1.0"?>
-                                  <urlset>
-                                      <url>incomplete
-                                  </urlset>
-                                  """;
+        const string malformedSitemap = """
+                                        <?xml version="1.0"?>
+                                        <urlset>
+                                            <url>incomplete
+                                        </urlset>
+                                        """;
         
         HttpClientMockBuilder mockBuilder = new HttpClientMockBuilder()
             .WithGetResponse("https://example.com/sitemap.xml", malformedSitemap, "application/xml");
@@ -19,12 +19,12 @@ public class ErrorHandlingTests
         HttpClient client = mockBuilder.Build();
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: "example.com",
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act & Assert
@@ -42,12 +42,12 @@ public class ErrorHandlingTests
         HttpClient client = mockBuilder.Build();
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: "example.com",
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act & Assert
@@ -59,18 +59,18 @@ public class ErrorHandlingTests
     public async Task ExportWebsite_WithMalformedHtml_ShouldContinueProcessing()
     {
         // Arrange
-        string malformedHtml = """
-                               <!DOCTYPE html>
-                               <html>
-                               <head>
-                                   <title>Malformed
-                               <body>
-                                   <h1>Incomplete HTML
-                                   <a href="/about">Link</a>
-                               </html>
-                               """;
+        const string malformedHtml = """
+                                     <!DOCTYPE html>
+                                     <html>
+                                     <head>
+                                         <title>Malformed
+                                     <body>
+                                         <h1>Incomplete HTML
+                                         <a href="/about">Link</a>
+                                     </html>
+                                     """;
         
-        string sitemapXml = """
+        const string sitemapXml = """
                             <?xml version="1.0" encoding="UTF-8"?>
                             <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
                                 <url><loc>https://example.com/</loc></url>
@@ -85,12 +85,12 @@ public class ErrorHandlingTests
         HttpClient client = mockBuilder.Build();
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: "example.com",
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act - HtmlAgilityPack is forgiving with malformed HTML
@@ -107,7 +107,7 @@ public class ErrorHandlingTests
     public async Task ExportWebsite_WithPageReturningError_ShouldLogAndContinue()
     {
         // Arrange
-        string sitemapXml = """
+        const string sitemapXml = """
                             <?xml version="1.0" encoding="UTF-8"?>
                             <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
                                 <url><loc>https://example.com/</loc></url>
@@ -123,12 +123,12 @@ public class ErrorHandlingTests
         HttpClient client = mockBuilder.Build();
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: "example.com",
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act
@@ -145,7 +145,7 @@ public class ErrorHandlingTests
     public async Task ExportWebsite_WithInvalidOutputFolder_ShouldThrowException()
     {
         // Arrange
-        string sitemapXml = """
+        const string sitemapXml = """
                             <?xml version="1.0" encoding="UTF-8"?>
                             <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
                                 <url><loc>https://example.com/</loc></url>
@@ -157,14 +157,14 @@ public class ErrorHandlingTests
             .WithGetResponse("https://example.com/", "<html></html>");
         
         HttpClient client = mockBuilder.Build();
-        string invalidFolder = "\\invalid?folder\\path"; // Invalid path
+        const string invalidFolder = @"\invalid?folder\path"; // Invalid path
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: "example.com",
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: invalidFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act & Assert
@@ -176,7 +176,7 @@ public class ErrorHandlingTests
     public async Task ExportWebsite_WithInvalidTargetUrl_ShouldRewriteAnyway()
     {
         // Arrange
-        string html = """
+        const string html = """
                       <html>
                       <body>
                           <img src="https://example.com/image.jpg">
@@ -185,7 +185,7 @@ public class ErrorHandlingTests
                       </html>
                       """;
         
-        string sitemapXml = """
+        const string sitemapXml = """
                             <?xml version="1.0" encoding="UTF-8"?>
                             <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
                                 <url><loc>https://example.com/</loc></url>
@@ -199,12 +199,12 @@ public class ErrorHandlingTests
         HttpClient client = mockBuilder.Build();
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        ExportCommand command = new ExportCommand(
+        ExportCommand command = new(
             SiteUrl: "example.com",
-            AdditionalUrls: Array.Empty<string>(),
+            AdditionalUrls: [],
             TargetUrl: "https://static-bad-url", // No trailing slash
             OutputFolder: outputFolder,
-            StringReplacements: Array.Empty<StringReplacements>()
+            StringReplacements: []
         );
         
         // Act

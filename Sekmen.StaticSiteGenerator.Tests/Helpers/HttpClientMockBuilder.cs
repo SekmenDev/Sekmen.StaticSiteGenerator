@@ -40,7 +40,7 @@ public class HttpClientMockBuilder
     
     public HttpClient Build()
     {
-        Mock<HttpMessageHandler> mock = new Mock<HttpMessageHandler>();
+        Mock<HttpMessageHandler> mock = new();
         
         mock.Protected()
             .Setup<Task<HttpResponseMessage>>(
@@ -49,7 +49,7 @@ public class HttpClientMockBuilder
                     r.Method == HttpMethod.Get &&
                     _responses.ContainsKey(r.RequestUri!.ToString())),
                 ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync((HttpRequestMessage request, CancellationToken ct) =>
+            .ReturnsAsync((HttpRequestMessage request, CancellationToken _) =>
                 _responses[request.RequestUri!.ToString()])
             .Verifiable();
         
@@ -60,7 +60,7 @@ public class HttpClientMockBuilder
                     r.Method == HttpMethod.Head &&
                     _headResponses.ContainsKey(r.RequestUri!.ToString())),
                 ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync((HttpRequestMessage request, CancellationToken ct) =>
+            .ReturnsAsync((HttpRequestMessage request, CancellationToken _) =>
             {
                 string url = request.RequestUri!.ToString();
                 (long contentLength, bool shouldSucceed) = _headResponses[url];
