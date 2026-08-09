@@ -13,6 +13,18 @@ public class UmbracoCommunityHtmlExporterApiComposer : IComposer
             document => document
                 .WithTitle("Umbraco Community Html Exporter Backoffice API")
                 .WithBackOfficeAuthentication()
-                .WithJsonOptions(Umbraco.Cms.Core.Constants.JsonOptionsNames.BackOffice));
+                .WithJsonOptions(Umbraco.Cms.Core.Constants.JsonOptionsNames.BackOffice)
+                .ConfigureOpenApiOptions(options =>
+                    options.AddDocumentTransformer((doc, _, _) =>
+                    {
+                        doc.Info.Version = "1.0";
+                        // doc.Info.Contact = new OpenApiContact
+                        // {
+                        //     Name = "Some Developer",
+                        //     Email = "you@company.com",
+                        //     Url = new Uri("https://company.com")
+                        // };
+                        return Task.CompletedTask;
+                    })));
     }
 }
