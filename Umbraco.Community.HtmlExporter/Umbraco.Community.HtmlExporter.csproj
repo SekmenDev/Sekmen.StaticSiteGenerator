@@ -22,7 +22,7 @@
         <PackageIcon>logo.png</PackageIcon>
         <PackageTags>Umbraco Umbraco-Marketplace HTML Export static web</PackageTags>
         <SignAssembly>true</SignAssembly>
-        <AssemblyOriginatorKeyFile>D:\Proton\My files\About Me\Documents\sekmen.dev nuget package signature.snk</AssemblyOriginatorKeyFile>
+        <AssemblyOriginatorKeyFile>D:\Proton\My files\About Company\Sekmen.Dev\sekmen.dev nuget package signature.snk</AssemblyOriginatorKeyFile>
         <PublicSign>true</PublicSign>
     </PropertyGroup>
 

@@ -1,4 +1,5 @@
-﻿namespace Sekmen.StaticSiteGenerator;
+﻿// ReSharper disable ForeachCanBePartlyConvertedToQueryUsingAnotherGetEnumerator
+namespace Sekmen.StaticSiteGenerator;
 
 public static class Functions
 {
@@ -114,7 +115,7 @@ public static class Functions
         // Extract from <link>, <script>, and <img> tags
         // Added detailed notifications for link tag processing (line 110 original reference)
         int linkIndex = 0;
-        var linkNodes = doc.DocumentNode.SelectNodes("//link") ?? new HtmlNodeCollection(null!);
+        HtmlNodeCollection linkNodes = doc.DocumentNode.SelectNodes("//link");
         foreach (HtmlNode link in linkNodes)
         {
             try
@@ -141,17 +142,19 @@ public static class Functions
         }
 
         // Extract from <script> tags
-        foreach (HtmlNode script in doc.DocumentNode.SelectNodes("//script[@src]") ?? new HtmlNodeCollection(null!))
+        HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//script[@src]");
+        foreach (HtmlNode script in nodes)
         {
             string src = script.GetAttributeValue("src", string.Empty);
             if (!string.IsNullOrWhiteSpace(src) &&
-                    !src.StartsWith("//") &&
-                    (src.StartsWith('/') || src.StartsWith(baseUri.AbsoluteUri)))
+                !src.StartsWith("//") &&
+                (src.StartsWith('/') || src.StartsWith(baseUri.AbsoluteUri)))
                 resources.Add(src);
         }
 
         // Extract from <img> tags
-        foreach (HtmlNode img in doc.DocumentNode.SelectNodes("//img[@src]") ?? new HtmlNodeCollection(null!))
+        HtmlNodeCollection imgNodes = doc.DocumentNode.SelectNodes("//img[@src]");
+        foreach (HtmlNode img in imgNodes)
         {
             string src = img.GetAttributeValue("src", string.Empty);
             if (!string.IsNullOrWhiteSpace(src) &&
