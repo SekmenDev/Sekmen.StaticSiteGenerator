@@ -3,7 +3,7 @@ const t = [
     name: "Umbraco Community Html Exporter Entrypoint",
     alias: "Umbraco.Community.HtmlExporter.Entrypoint",
     type: "backofficeEntryPoint",
-    js: () => import("./entrypoint-DYdICnpW.js")
+    js: () => import("./entrypoint-BRD7v-Vi.js")
   }
 ], o = [
   {
