@@ -23,9 +23,9 @@ public class FullExportIntegrationTests : IAsyncLifetime
     public async Task ExportWebsite_WithRealServer_ShouldCrawlAndExportAllPages()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: new[] { "/404" },
             TargetUrl: "https://static.example.com/",
@@ -51,10 +51,10 @@ public class FullExportIntegrationTests : IAsyncLifetime
     public async Task ExportWebsite_ShouldRewriteUrlsInContent()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        var targetUrl = "https://static.example.com/";
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string targetUrl = "https://static.example.com/";
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: targetUrl,
@@ -66,7 +66,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         await Functions.ExportWebsite(_client!, command);
         
         // Assert
-        var indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
+        string indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
         indexContent.ShouldContain(targetUrl);
         
         // Cleanup
@@ -77,9 +77,9 @@ public class FullExportIntegrationTests : IAsyncLifetime
     public async Task ExportWebsite_ShouldExtractAndDownloadResources()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: "https://static.example.com/",
@@ -104,9 +104,9 @@ public class FullExportIntegrationTests : IAsyncLifetime
     public async Task ExportWebsite_ShouldHandleInlineStyleBackgroundImages()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: "https://static.example.com/",
@@ -128,9 +128,9 @@ public class FullExportIntegrationTests : IAsyncLifetime
     public async Task ExportWebsite_ShouldHandlePdfFilesGracefully()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: new[] { "/pdf-file" },
             TargetUrl: "https://static.example.com/",
@@ -152,9 +152,9 @@ public class FullExportIntegrationTests : IAsyncLifetime
     public async Task ExportWebsite_ShouldHandleMalformedHtmlCorrectly()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: new[] { "/malformed-html" },
             TargetUrl: "https://static.example.com/",
@@ -176,9 +176,9 @@ public class FullExportIntegrationTests : IAsyncLifetime
     public async Task ExportWebsite_ShouldHandleCircularLinksWithoutHanging()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: new[] { "/circular-link-a" },
             TargetUrl: "https://static.example.com/",
@@ -201,9 +201,9 @@ public class FullExportIntegrationTests : IAsyncLifetime
     public async Task ExportWebsite_ShouldHandleSpecialCharactersInPaths()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: new[] { "/special-characters" },
             TargetUrl: "https://static.example.com/",
@@ -216,7 +216,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         
         // Assert
         File.Exists(Path.Combine(outputFolder, "special-characters", "index.html")).ShouldBeTrue();
-        var content = File.ReadAllText(Path.Combine(outputFolder, "special-characters", "index.html"));
+        string content = File.ReadAllText(Path.Combine(outputFolder, "special-characters", "index.html"));
         content.ShouldContain("file-name_123.png");
         
         // Cleanup
@@ -227,9 +227,9 @@ public class FullExportIntegrationTests : IAsyncLifetime
     public async Task ExportWebsite_ShouldHandleMissingResourcesGracefully()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: new[] { "/missing-resource" },
             TargetUrl: "https://static.example.com/",

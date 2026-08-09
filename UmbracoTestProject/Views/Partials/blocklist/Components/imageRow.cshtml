@@ -3,11 +3,11 @@
 @using Clean.Core.Extensions
 
 @{
-    var row = Model.Content as ImageRow;
-    var settings = Model.Settings as ImageRowSettings;
+    ImageRow? row = Model.Content as ImageRow;
+    ImageRowSettings? settings = Model.Settings as ImageRowSettings;
     if (settings?.Hide ?? false) { return; }
 
-    var spacingClasses = "";
+    string spacingClasses = "";
     if (Model.Settings is ISpacingProperties spacing)
     {
         spacingClasses = Clean.Core.Helpers.SpacingHelper.GetSpacingClasses(spacing.PaddingTop, spacing.PaddingBottom, spacing.PaddingLeft, spacing.PaddingRight, spacing.MarginTop, spacing.MarginBottom, spacing.MarginLeft, spacing.MarginRight);

@@ -5,8 +5,8 @@
 
 @{
     Layout = "master.cshtml";
-    var submitted = false;
-    if (bool.TryParse(TempData["Success"]?.ToString() ?? "", out var success))
+    bool submitted = false;
+    if (bool.TryParse(TempData["Success"]?.ToString() ?? "", out bool success))
     {
         submitted = true;
     }

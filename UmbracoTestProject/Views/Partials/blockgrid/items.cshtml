@@ -8,7 +8,7 @@
 }
 
 <div class="umb-block-grid__layout-container">
-    @foreach (var item in Model)
+    @foreach (BlockGridItem item in Model)
     {
         <div
             class="umb-block-grid__layout-item"
@@ -19,7 +19,7 @@
             data-row-span="@item.RowSpan"
             style=" --umb-block-grid--item-column-span: @item.ColumnSpan; --umb-block-grid--item-row-span: @item.RowSpan; ">
             @{
-                var partialViewName = "blockgrid/Components/" + item.Content.ContentType.Alias;
+                string partialViewName = "blockgrid/Components/" + item.Content.ContentType.Alias;
                 try
                 {
                     @await Html.PartialAsync(partialViewName, item)

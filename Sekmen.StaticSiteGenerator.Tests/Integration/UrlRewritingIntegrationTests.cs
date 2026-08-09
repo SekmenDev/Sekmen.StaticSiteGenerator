@@ -23,10 +23,10 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
     public async Task ShouldRewriteAbsoluteUrls()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        var targetUrl = "https://static.example.com/";
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string targetUrl = "https://static.example.com/";
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: targetUrl,
@@ -38,7 +38,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         await Functions.ExportWebsite(_client!, command);
         
         // Assert
-        var indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
+        string indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
         // The original URLs should be rewritten to target URL
         indexContent.ShouldContain(targetUrl);
         indexContent.ShouldNotContain(_fixture.BaseUrl);
@@ -51,10 +51,10 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
     public async Task ShouldRewriteRootRelativeUrls()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        var targetUrl = "https://cdn.example.com/";
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string targetUrl = "https://cdn.example.com/";
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: targetUrl,
@@ -66,7 +66,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         await Functions.ExportWebsite(_client!, command);
         
         // Assert
-        var indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
+        string indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
         indexContent.ShouldContain(targetUrl);
         
         // Cleanup
@@ -77,10 +77,10 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
     public async Task ShouldPreserveQueryStringsAfterRewriting()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        var targetUrl = "https://static.example.com/";
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string targetUrl = "https://static.example.com/";
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: new[] { "/special-characters" },
             TargetUrl: targetUrl,
@@ -92,7 +92,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         await Functions.ExportWebsite(_client!, command);
         
         // Assert
-        var content = File.ReadAllText(Path.Combine(outputFolder, "special-characters", "index.html"));
+        string content = File.ReadAllText(Path.Combine(outputFolder, "special-characters", "index.html"));
         content.ShouldContain("?param=value");
         
         // Cleanup
@@ -103,10 +103,10 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
     public async Task ShouldPreserveAnchorsAfterRewriting()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        var targetUrl = "https://static.example.com/";
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string targetUrl = "https://static.example.com/";
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: new[] { "/special-characters" },
             TargetUrl: targetUrl,
@@ -118,7 +118,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         await Functions.ExportWebsite(_client!, command);
         
         // Assert
-        var content = File.ReadAllText(Path.Combine(outputFolder, "special-characters", "index.html"));
+        string content = File.ReadAllText(Path.Combine(outputFolder, "special-characters", "index.html"));
         content.ShouldContain("#anchor");
         
         // Cleanup
@@ -129,9 +129,9 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
     public async Task ShouldApplyStringReplacementsToExportedContent()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: "https://static.example.com/",
@@ -146,7 +146,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         await Functions.ExportWebsite(_client!, command);
         
         // Assert
-        var indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
+        string indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
         indexContent.ShouldContain("Hello");
         indexContent.ShouldNotContain("Welcome");
         
@@ -158,10 +158,10 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
     public async Task ShouldRewriteImgSrcUrls()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        var targetUrl = "https://cdn.example.com/";
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string targetUrl = "https://cdn.example.com/";
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: targetUrl,
@@ -173,7 +173,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         await Functions.ExportWebsite(_client!, command);
         
         // Assert
-        var indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
+        string indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
         indexContent.ShouldContain($"{targetUrl}images/logo.png");
         
         // Cleanup
@@ -184,10 +184,10 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
     public async Task ShouldRewriteScriptSrcUrls()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        var targetUrl = "https://cdn.example.com/";
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string targetUrl = "https://cdn.example.com/";
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: targetUrl,
@@ -199,7 +199,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         await Functions.ExportWebsite(_client!, command);
         
         // Assert
-        var indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
+        string indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
         indexContent.ShouldContain($"{targetUrl}js/app.js");
         
         // Cleanup
@@ -210,10 +210,10 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
     public async Task ShouldRewriteLinkHrefUrls()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        var targetUrl = "https://cdn.example.com/";
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string targetUrl = "https://cdn.example.com/";
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: targetUrl,
@@ -225,7 +225,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         await Functions.ExportWebsite(_client!, command);
         
         // Assert
-        var indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
+        string indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
         indexContent.ShouldContain($"{targetUrl}css/style.css");
         
         // Cleanup
@@ -236,10 +236,10 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
     public async Task ShouldRewriteInlineStyleBackgroundUrls()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        var targetUrl = "https://cdn.example.com/";
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string targetUrl = "https://cdn.example.com/";
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: targetUrl,
@@ -251,7 +251,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         await Functions.ExportWebsite(_client!, command);
         
         // Assert
-        var servicesContent = File.ReadAllText(Path.Combine(outputFolder, "services", "index.html"));
+        string servicesContent = File.ReadAllText(Path.Combine(outputFolder, "services", "index.html"));
         servicesContent.ShouldContain($"{targetUrl}images/hero.jpg");
         
         // Cleanup
@@ -262,9 +262,9 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
     public async Task ShouldHandleMultipleConsecutiveStringReplacements()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: "https://static.example.com/",
@@ -280,7 +280,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         await Functions.ExportWebsite(_client!, command);
         
         // Assert - should apply replacements in order
-        var indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
+        string indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
         indexContent.ShouldContain("Hello");
         
         // Cleanup

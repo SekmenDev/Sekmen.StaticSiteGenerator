@@ -23,9 +23,9 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
     public async Task ShouldDownloadCssFiles()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: "https://static.example.com/",
@@ -37,9 +37,9 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         await Functions.ExportWebsite(_client!, command);
         
         // Assert
-        var cssFile = Path.Combine(outputFolder, "css", "style.css");
+        string cssFile = Path.Combine(outputFolder, "css", "style.css");
         File.Exists(cssFile).ShouldBeTrue();
-        var content = File.ReadAllText(cssFile);
+        string content = File.ReadAllText(cssFile);
         content.ShouldContain("CSS");
         
         // Cleanup
@@ -50,9 +50,9 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
     public async Task ShouldDownloadJavaScriptFiles()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: "https://static.example.com/",
@@ -64,9 +64,9 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         await Functions.ExportWebsite(_client!, command);
         
         // Assert
-        var jsFile = Path.Combine(outputFolder, "js", "app.js");
+        string jsFile = Path.Combine(outputFolder, "js", "app.js");
         File.Exists(jsFile).ShouldBeTrue();
-        var content = File.ReadAllText(jsFile);
+        string content = File.ReadAllText(jsFile);
         content.ShouldContain("JS");
         
         // Cleanup
@@ -77,9 +77,9 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
     public async Task ShouldDownloadImageFiles()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: "https://static.example.com/",
@@ -91,9 +91,9 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         await Functions.ExportWebsite(_client!, command);
         
         // Assert
-        var imageFile = Path.Combine(outputFolder, "images", "logo.png");
+        string imageFile = Path.Combine(outputFolder, "images", "logo.png");
         File.Exists(imageFile).ShouldBeTrue();
-        var bytes = File.ReadAllBytes(imageFile);
+        byte[] bytes = File.ReadAllBytes(imageFile);
         bytes.Length.ShouldBeGreaterThan(0);
         
         // Cleanup
@@ -104,9 +104,9 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
     public async Task ShouldCreateCorrectDirectoryStructure()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: "https://static.example.com/",
@@ -133,9 +133,9 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
     public async Task ShouldNotRedownloadExistingResourcesWithSameSize()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: "https://static.example.com/",
@@ -145,14 +145,14 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         
         // Act - first export
         await Functions.ExportWebsite(_client!, command);
-        var firstExportTime = File.GetLastWriteTime(Path.Combine(outputFolder, "css", "style.css"));
+        DateTime firstExportTime = File.GetLastWriteTime(Path.Combine(outputFolder, "css", "style.css"));
         
         // Wait a bit to ensure timestamps would differ if file is rewritten
         await Task.Delay(100);
         
         // Act - second export
         await Functions.ExportWebsite(_client!, command);
-        var secondExportTime = File.GetLastWriteTime(Path.Combine(outputFolder, "css", "style.css"));
+        DateTime secondExportTime = File.GetLastWriteTime(Path.Combine(outputFolder, "css", "style.css"));
         
         // Assert - file should not be rewritten if size is same
         // Note: This test may be flaky as it depends on timing and file timestamps
@@ -165,9 +165,9 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
     public async Task ShouldHandleFilesWithSpecialCharactersInNames()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: new[] { "/special-characters" },
             TargetUrl: "https://static.example.com/",
@@ -179,7 +179,7 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         await Functions.ExportWebsite(_client!, command);
         
         // Assert
-        var filePath = Path.Combine(outputFolder, "images", "file-name_123.png");
+        string filePath = Path.Combine(outputFolder, "images", "file-name_123.png");
         File.Exists(filePath).ShouldBeTrue();
         
         // Cleanup
@@ -190,9 +190,9 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
     public async Task ShouldHandleMissingResourcesWithoutCrashing()
     {
         // Arrange
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
             AdditionalUrls: new[] { "/missing-resource" },
             TargetUrl: "https://static.example.com/",

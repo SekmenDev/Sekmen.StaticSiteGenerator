@@ -13,7 +13,7 @@
             continue;
         }
 
-        var data = block.Content;
+        IPublishedElement data = block.Content;
 
         @await Html.PartialAsync("blocklist/Components/" + data.ContentType.Alias, block)
     }

@@ -43,7 +43,7 @@ public class HttpClientMockBuilder
     
     public HttpClient Build()
     {
-        var mock = new Mock<HttpMessageHandler>();
+        Mock<HttpMessageHandler> mock = new Mock<HttpMessageHandler>();
         
         mock.Protected()
             .Setup<Task<HttpResponseMessage>>(
@@ -65,13 +65,13 @@ public class HttpClientMockBuilder
                 ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync((HttpRequestMessage request, CancellationToken ct) =>
             {
-                var url = request.RequestUri!.ToString();
-                var (contentLength, shouldSucceed) = _headResponses[url];
+                string url = request.RequestUri!.ToString();
+                (long contentLength, bool shouldSucceed) = _headResponses[url];
                 
                 if (!shouldSucceed)
                     return new HttpResponseMessage(HttpStatusCode.NotFound);
                 
-                var response = new HttpResponseMessage(HttpStatusCode.OK);
+                HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
                 response.Content.Headers.ContentLength = contentLength;
                 return response;
             })

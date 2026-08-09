@@ -16,22 +16,22 @@ public class UrlNormalizationTests
     public async Task ShouldCorrectlyFilterUrlsAsInternalOrExternal(string href, bool shouldBeInternal)
     {
         // Arrange
-        var html = $"""
-            <html>
-            <body>
-                <a href="{href}">Link</a>
-            </body>
-            </html>
-            """;
+        string html = $"""
+                       <html>
+                       <body>
+                           <a href="{href}">Link</a>
+                       </body>
+                       </html>
+                       """;
         
-        var sitemapXml = """
-            <?xml version="1.0" encoding="UTF-8"?>
-            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-                <url><loc>https://example.com/</loc></url>
-            </urlset>
-            """;
+        string sitemapXml = """
+                            <?xml version="1.0" encoding="UTF-8"?>
+                            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                                <url><loc>https://example.com/</loc></url>
+                            </urlset>
+                            """;
         
-        var mockBuilder = new HttpClientMockBuilder()
+        HttpClientMockBuilder mockBuilder = new HttpClientMockBuilder()
             .WithGetResponse("https://example.com/sitemap.xml", sitemapXml, "application/xml")
             .WithGetResponse("https://example.com/", html);
         
@@ -40,10 +40,10 @@ public class UrlNormalizationTests
             mockBuilder.WithGetResponse($"https://example.com{href}", "<html></html>");
         }
         
-        var client = mockBuilder.Build();
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        HttpClient client = mockBuilder.Build();
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: "example.com",
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: "https://static.example.com/",
@@ -69,30 +69,30 @@ public class UrlNormalizationTests
     public async Task ShouldPreserveSpecialCharactersInUrls(string href, string expectedInUrl)
     {
         // Arrange
-        var html = $"""
-            <html>
-            <body>
-                <a href="{href}">Link</a>
-            </body>
-            </html>
-            """;
+        string html = $"""
+                       <html>
+                       <body>
+                           <a href="{href}">Link</a>
+                       </body>
+                       </html>
+                       """;
         
-        var sitemapXml = """
-            <?xml version="1.0" encoding="UTF-8"?>
-            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-                <url><loc>https://example.com/</loc></url>
-            </urlset>
-            """;
+        string sitemapXml = """
+                            <?xml version="1.0" encoding="UTF-8"?>
+                            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                                <url><loc>https://example.com/</loc></url>
+                            </urlset>
+                            """;
         
-        var mockBuilder = new HttpClientMockBuilder()
+        HttpClientMockBuilder mockBuilder = new HttpClientMockBuilder()
             .WithGetResponse("https://example.com/sitemap.xml", sitemapXml, "application/xml")
             .WithGetResponse("https://example.com/", html)
             .WithGetResponse($"https://example.com{href}", "<html></html>");
         
-        var client = mockBuilder.Build();
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        HttpClient client = mockBuilder.Build();
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: "example.com",
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: "https://static.example.com/",
@@ -119,21 +119,21 @@ public class UrlNormalizationTests
     public async Task ShouldNormalizePathsCorrectly(string urlPath, string expectedFile)
     {
         // Arrange
-        var sitemapXml = $"""
-            <?xml version="1.0" encoding="UTF-8"?>
-            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-                <url><loc>https://example.com{urlPath}</loc></url>
-            </urlset>
-            """;
+        string sitemapXml = $"""
+                             <?xml version="1.0" encoding="UTF-8"?>
+                             <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                                 <url><loc>https://example.com{urlPath}</loc></url>
+                             </urlset>
+                             """;
         
-        var mockBuilder = new HttpClientMockBuilder()
+        HttpClientMockBuilder mockBuilder = new HttpClientMockBuilder()
             .WithGetResponse("https://example.com/sitemap.xml", sitemapXml, "application/xml")
             .WithGetResponse($"https://example.com{urlPath}", "<html></html>");
         
-        var client = mockBuilder.Build();
-        var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        HttpClient client = mockBuilder.Build();
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
-        var command = new ExportCommand(
+        ExportCommand command = new ExportCommand(
             SiteUrl: "example.com",
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: "https://static.example.com/",

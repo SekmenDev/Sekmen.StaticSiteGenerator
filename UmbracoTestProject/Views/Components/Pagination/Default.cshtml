@@ -22,9 +22,9 @@
                 </li>
             }
 
-            @for (var p = Model.PageNumberStart; p <= Model.PageNumberEnd; p++)
+            @for (int p = Model.PageNumberStart; p <= Model.PageNumberEnd; p++)
             {
-                var isCurrentPage = p == Model.PageNumber;
+                bool isCurrentPage = p == Model.PageNumber;
                 <li class="page-item">
                     @if(isCurrentPage) 
                     {

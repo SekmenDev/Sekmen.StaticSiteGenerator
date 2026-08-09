@@ -4,12 +4,13 @@
 @using ContentModels = Umbraco.Cms.Web.Common.PublishedModels
 @using Umbraco.Cms.Core
 @using Clean.Core.Extensions
+@using Microsoft.Extensions.Primitives
 @inject Umbraco.Cms.Core.IPublishedContentQuery publishedContentQuery
 
 @{
     Layout = "master.cshtml";
-    var searchQuery = Context.Request.Query["q"];
-    var docTypesToIgnore = new[] { Category.ModelTypeAlias, CategoryList.ModelTypeAlias, Error.ModelTypeAlias, Search.ModelTypeAlias, XMlsitemap.ModelTypeAlias };
+    StringValues searchQuery = Context.Request.Query["q"];
+    string[] docTypesToIgnore = new[] { Category.ModelTypeAlias, CategoryList.ModelTypeAlias, Error.ModelTypeAlias, Search.ModelTypeAlias, XMlsitemap.ModelTypeAlias };
 }
 
 @await Html.PartialAsync("~/Views/Partials/pageHeader.cshtml", new PageHeaderViewModel(Model.Name, Model.Title, Model.Subtitle, Model.MainImage))
@@ -30,12 +31,12 @@
             <div class="col-lg-8 col-md-10 mx-auto">
                 @if (!string.IsNullOrWhiteSpace(searchQuery))
                 {
-                    var results = publishedContentQuery.Search(searchQuery).Where(x => !docTypesToIgnore.Contains(x.Content.ContentType.Alias));
+                    IEnumerable<PublishedSearchResult>? results = publishedContentQuery.Search(searchQuery).Where(x => !docTypesToIgnore.Contains(x.Content.ContentType.Alias));
                     long resultCount = results != null && results.Any() ? results.Count() : 0;
                     @Html.Raw(string.Format(Umbraco.GetDictionaryValue("Search.Results"), resultCount, searchQuery.ToString().StripHtml()))
                     if (resultCount > 0)
                     {
-                        foreach (var result in results)
+                        foreach (PublishedSearchResult result in results)
                         {
                             <div class="post-preview">
                                 <a href="@result.Content.Url()">
@@ -50,7 +51,7 @@
                                 @if (result.Content is IArticleControls article && ((result.Content.HasProperty("author") && result.Content.HasValue("author"))
                                || (result.Content.HasProperty("articleDate") && result.Content.HasValue("articleDate") && result.Content.Value<DateTime>("articleDate") > DateTime.MinValue)))
                                 {
-                                    var author = article.Author;
+                                    IPublishedContent? author = article.Author;
                                     <p class="post-meta">
                                         @Umbraco.GetDictionaryValue("Article.Posted")
                                         @Umbraco.GetDictionaryValue("Article.By")@Html.Raw("&nbsp;")@(author.Name)
