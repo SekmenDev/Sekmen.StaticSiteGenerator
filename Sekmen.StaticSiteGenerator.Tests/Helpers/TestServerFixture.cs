@@ -40,7 +40,7 @@ public class TestServerFixture : IAsyncLifetime
         _app.MapGet("/circular-link-a", GetCircularPageA);
         _app.MapGet("/circular-link-b", GetCircularPageB);
         _app.MapGet("/missing-resource", GetPageWithMissingResource);
-        _app.MapGet("/pdf-file", () => Results.File([], "application/pdf", "test.pdf"));
+        _app.MapGet("/pdf-file.pdf", () => Results.File([], "application/pdf", "test.pdf"));
         
         // Start server on random port
         await _app.StartAsync();
@@ -235,13 +235,13 @@ public class TestServerFixture : IAsyncLifetime
         """;
     
     private IResult GetCssResource(string path) =>
-        path.EndsWith("missing") ? Results.NotFound() : Results.Text("/* CSS */", "text/css");
+        path.Contains("nonexistent") || path.Contains("missing") ? Results.NotFound() : Results.Text("/* CSS */", "text/css");
     
     private IResult GetJsResource(string path) =>
-        path.EndsWith("missing") ? Results.NotFound() : Results.Text("console.log('JS');", "application/javascript");
+        path.Contains("nonexistent") || path.Contains("missing") ? Results.NotFound() : Results.Text("console.log('JS');", "application/javascript");
     
     private IResult GetImageResource(string path) =>
-        path.EndsWith("nonexistent") ? Results.NotFound() : Results.File([0xFF, 0xD8], "image/jpeg");
+        path.Contains("nonexistent") ? Results.NotFound() : Results.File([0xFF, 0xD8], "image/jpeg");
     
     private IResult GetAssetResource(string path) => Results.Text("Asset content");
 }

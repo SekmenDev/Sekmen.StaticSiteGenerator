@@ -130,7 +130,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         
         ExportCommand command = new(
             SiteUrl: _fixture.BaseUrl,
-            AdditionalUrls: ["/pdf-file"],
+            AdditionalUrls: ["/pdf-file.pdf"],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
             StringReplacements: []
@@ -140,7 +140,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         await Functions.ExportWebsite(_client!, command);
         
         // Assert
-        File.Exists(Path.Combine(outputFolder, "pdf-file")).ShouldBeTrue();
+        File.Exists(Path.Combine(outputFolder, "pdf-file.pdf")).ShouldBeTrue();
         
         // Cleanup
         Directory.Delete(outputFolder, true);
