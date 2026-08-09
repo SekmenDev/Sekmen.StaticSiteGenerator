@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Hosting;
+
 namespace Sekmen.StaticSiteGenerator.Tests.Helpers;
 
 public class TestServerFixture : IAsyncLifetime
@@ -7,41 +9,45 @@ public class TestServerFixture : IAsyncLifetime
     
     public async Task InitializeAsync()
     {
-        var builder = WebApplication.CreateBuilder();
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseKestrel(options =>
+        {
+            options.Listen(IPAddress.Loopback, 0);
+        });
         _app = builder.Build();
         
         // Configure static file serving
         _app.UseStaticFiles();
         
         // Sitemap endpoint
-        _app.MapGet("/sitemap.xml", () => GetSitemap());
+        _app.MapGet("/sitemap.xml", GetSitemap);
         
         // Standard HTML pages
-        _app.MapGet("/", () => GetIndexPage());
-        _app.MapGet("/about", () => GetAboutPage());
-        _app.MapGet("/contact", () => GetContactPage());
-        _app.MapGet("/services", () => GetServicesPage());
-        _app.MapGet("/blog/{slug}", (string slug) => GetBlogPage(slug));
-        _app.MapGet("/404", () => Get404Page());
+        _app.MapGet("/", GetIndexPage);
+        _app.MapGet("/about", GetAboutPage);
+        _app.MapGet("/contact", GetContactPage);
+        _app.MapGet("/services", GetServicesPage);
+        _app.MapGet("/blog/{slug}", GetBlogPage);
+        _app.MapGet("/404", Get404Page);
         
         // Resource endpoints
-        _app.MapGet("/css/{*path}", (string path) => GetCssResource(path));
-        _app.MapGet("/js/{*path}", (string path) => GetJsResource(path));
-        _app.MapGet("/images/{*path}", (string path) => GetImageResource(path));
-        _app.MapGet("/assets/{*path}", (string path) => GetAssetResource(path));
+        _app.MapGet("/css/{*path}", GetCssResource);
+        _app.MapGet("/js/{*path}", GetJsResource);
+        _app.MapGet("/images/{*path}", GetImageResource);
+        _app.MapGet("/assets/{*path}", GetAssetResource);
         
         // Special test endpoints
-        _app.MapGet("/malformed-html", () => GetMalformedHtml());
-        _app.MapGet("/special-characters", () => GetSpecialCharacterPage());
-        _app.MapGet("/circular-link-a", () => GetCircularPageA());
-        _app.MapGet("/circular-link-b", () => GetCircularPageB());
-        _app.MapGet("/missing-resource", () => GetPageWithMissingResource());
-        _app.MapGet("/pdf-file", () => Results.File(new byte[] { }, "application/pdf", "test.pdf"));
+        _app.MapGet("/malformed-html", GetMalformedHtml);
+        _app.MapGet("/special-characters", GetSpecialCharacterPage);
+        _app.MapGet("/circular-link-a", GetCircularPageA);
+        _app.MapGet("/circular-link-b", GetCircularPageB);
+        _app.MapGet("/missing-resource", GetPageWithMissingResource);
+        _app.MapGet("/pdf-file", () => Results.File([], "application/pdf", "test.pdf"));
         
         // Start server on random port
         await _app.StartAsync();
         
-        var addresses = _app.Urls.First();
+        string addresses = _app.Urls.First();
         BaseUrl = addresses;
     }
     
@@ -50,7 +56,8 @@ public class TestServerFixture : IAsyncLifetime
         if (_app != null)
         {
             await _app.StopAsync();
-            _app.DisposeAsync().GetAwaiter().GetResult();
+            await _app.DisposeAsync();
+            await Task.Delay(100);
         }
     }
     
@@ -236,7 +243,7 @@ public class TestServerFixture : IAsyncLifetime
         path.EndsWith("missing") ? Results.NotFound() : Results.Text("console.log('JS');", "application/javascript");
     
     private IResult GetImageResource(string path) =>
-        path.EndsWith("nonexistent") ? Results.NotFound() : Results.File(new byte[] { 0xFF, 0xD8 }, "image/jpeg");
+        path.EndsWith("nonexistent") ? Results.NotFound() : Results.File([0xFF, 0xD8], "image/jpeg");
     
     private IResult GetAssetResource(string path) => Results.Text("Asset content");
 }

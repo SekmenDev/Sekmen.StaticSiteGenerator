@@ -26,7 +26,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
         var command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: new[] { "/404" },
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
@@ -55,7 +55,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         var targetUrl = "https://static.example.com/";
         
         var command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: targetUrl,
             OutputFolder: outputFolder,
@@ -80,7 +80,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
         var command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
@@ -107,7 +107,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
         var command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
@@ -131,7 +131,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
         var command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: new[] { "/pdf-file" },
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
@@ -155,7 +155,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
         var command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: new[] { "/malformed-html" },
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
@@ -179,7 +179,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
         var command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: new[] { "/circular-link-a" },
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
@@ -204,7 +204,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
         var command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: new[] { "/special-characters" },
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
@@ -230,7 +230,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         var outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
         var command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: new[] { "/missing-resource" },
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,

@@ -5,7 +5,9 @@ public static class Functions
 {
     public static async Task ExportWebsite(HttpClient client, ExportCommand command)
     {
-        string sourceUrl = $"https://{command.SiteUrl}/";
+        string sourceUrl = command.SiteUrl.Contains("://") 
+            ? (command.SiteUrl.EndsWith('/') ? command.SiteUrl : command.SiteUrl + "/")
+            : $"https://{command.SiteUrl}/";
         Directory.CreateDirectory(command.OutputFolder);
         string sitemapXml = await client.GetStringAsync(sourceUrl + "sitemap.xml");
         XDocument sitemap = XDocument.Parse(sitemapXml);
@@ -15,7 +17,6 @@ public static class Functions
         Queue<string> urls = new();
 
         // Load sitemap URLs
-        urls.Enqueue("sitemap.xml");
         foreach (XElement loc in sitemap.Descendants(ns + "loc")) 
             urls.Enqueue(loc.Value);
 
@@ -138,7 +139,7 @@ public static class Functions
         // Extract from <link>, <script>, and <img> tags
         // Added detailed notifications for link tag processing (line 110 original reference)
         int linkIndex = 0;
-        HtmlNodeCollection linkNodes = doc.DocumentNode.SelectNodes("//link");
+        HtmlNodeCollection linkNodes = doc.DocumentNode.SelectNodes("//link") ?? new HtmlNodeCollection(null!);
         foreach (HtmlNode link in linkNodes)
         {
             try
@@ -165,7 +166,7 @@ public static class Functions
         }
 
         // Extract from <script> tags
-        HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//script[@src]");
+        HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//script[@src]") ?? new HtmlNodeCollection(null!);
         foreach (HtmlNode script in nodes)
         {
             string src = script.GetAttributeValue("src", string.Empty);
@@ -176,7 +177,7 @@ public static class Functions
         }
 
         // Extract from <img> tags
-        HtmlNodeCollection imgNodes = doc.DocumentNode.SelectNodes("//img[@src]");
+        HtmlNodeCollection imgNodes = doc.DocumentNode.SelectNodes("//img[@src]") ?? new HtmlNodeCollection(null!);
         foreach (HtmlNode img in imgNodes)
         {
             string src = img.GetAttributeValue("src", string.Empty);
