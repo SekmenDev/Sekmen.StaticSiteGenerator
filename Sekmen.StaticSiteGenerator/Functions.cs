@@ -57,6 +57,18 @@ public static class Functions
         }
     }
 
+    /// <summary>
+    /// 1. Fetch page content
+    /// 2. Update URLs in HTML content
+    /// 3. Extract and download resources
+    /// 4. Save HTML content
+    /// 5. Return HTML
+    /// </summary>
+    /// <param name="client">HttpClient</param>
+    /// <param name="pageUrl">current page url as string</param>
+    /// <param name="sourceUrl">source website url, domain</param>
+    /// <param name="command">ExportCommand</param>
+    /// <returns>HtmlDocument</returns>
     private static async Task<HtmlDocument?> ProcessUrls(HttpClient client, string pageUrl, string sourceUrl, ExportCommand command)
     {
         try
@@ -78,6 +90,7 @@ public static class Functions
                 Directory.CreateDirectory(Path.GetDirectoryName(pagePath)!);
 
             // Update URLs in HTML content
+            // TODO: fix these replacements. unexpected replacement result: https://huseyinsekmenoglu.net//www.googletagmanager.com/gtag/js
             string updatedHtml = html
                 .Replace("\"" + sourceUrl.Replace("https:", "").Replace("http:", ""), "\"" + command.TargetUrl)
                 .Replace("'" + sourceUrl.Replace("https:", "").Replace("http:", ""), "'" + command.TargetUrl)
@@ -108,6 +121,16 @@ public static class Functions
         return null;
     }
 
+    /// <summary>
+    /// Extracts URLs from HTML content
+    /// 1. <link> tags
+    /// 2. <script> tags
+    /// 3. <img> tags
+    /// 4. Inline styles
+    /// </summary>
+    /// <param name="doc"></param>
+    /// <param name="baseUri"></param>
+    /// <returns>array of urls as string</returns>
     private static HashSet<string> ExtractResourceUrls(HtmlDocument doc, Uri baseUri)
     {
         HashSet<string> resources = [];
@@ -184,6 +207,19 @@ public static class Functions
         return resources;
     }
 
+    /// <summary>
+    /// Downloads a resource from the given URL and saves it to the specified output folder.
+    /// If the resource already exists and has the same size, it is not downloaded again.
+    /// 1. Determine full resource URL and local path
+    /// 2. Check if the resource needs to be downloaded
+    /// 3. Get remote file size
+    /// 4. If file exists, compare sizes
+    /// 5. Download the resource
+    /// </summary>
+    /// <param name="client">HttpClient</param>
+    /// <param name="uri"></param>
+    /// <param name="resourceUrl"></param>
+    /// <param name="outputFolder"></param>
     private static async Task DownloadResource(HttpClient client, Uri uri, string resourceUrl, string outputFolder)
     {
         try
