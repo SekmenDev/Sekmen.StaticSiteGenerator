@@ -33,7 +33,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert
         string indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
@@ -61,7 +61,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert
         string indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
@@ -87,7 +87,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert
         string content = File.ReadAllText(Path.Combine(outputFolder, "special-characters", "index.html"));
@@ -113,7 +113,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert
         string content = File.ReadAllText(Path.Combine(outputFolder, "special-characters", "index.html"));
@@ -141,7 +141,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert
         string indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
@@ -168,7 +168,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert
         string indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
@@ -194,7 +194,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert
         string indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
@@ -220,7 +220,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert
         string indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));
@@ -246,7 +246,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert
         string servicesContent = File.ReadAllText(Path.Combine(outputFolder, "services", "index.html"));
@@ -275,7 +275,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert - should apply replacements in order
         string indexContent = File.ReadAllText(Path.Combine(outputFolder, "index.html"));

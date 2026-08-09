@@ -32,7 +32,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert - verify all expected pages are exported
         File.Exists(Path.Combine(outputFolder, "index.html")).ShouldBeTrue();
@@ -61,7 +61,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert
         string indexContent = await File.ReadAllTextAsync(Path.Combine(outputFolder, "index.html"));
@@ -86,7 +86,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert - check for resource files
         File.Exists(Path.Combine(outputFolder, "css", "style.css")).ShouldBeTrue();
@@ -113,7 +113,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert - hero.jpg should be downloaded from inline style background-image in services page
         File.Exists(Path.Combine(outputFolder, "images", "hero.jpg")).ShouldBeTrue();
@@ -137,7 +137,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         );
         
         // Act - should not crash when encountering PDF
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert
         File.Exists(Path.Combine(outputFolder, "pdf-file.pdf")).ShouldBeTrue();
@@ -161,7 +161,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert - should still export despite malformed HTML
         File.Exists(Path.Combine(outputFolder, "malformed-html", "index.html")).ShouldBeTrue();
@@ -185,7 +185,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         );
         
         // Act - should complete without hanging
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert
         File.Exists(Path.Combine(outputFolder, "circular-link-a", "index.html")).ShouldBeTrue();
@@ -210,7 +210,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert
         File.Exists(Path.Combine(outputFolder, "special-characters", "index.html")).ShouldBeTrue();
@@ -236,7 +236,7 @@ public class FullExportIntegrationTests : IAsyncLifetime
         );
         
         // Act - should not crash when resources return 404
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert - page should still be exported
         File.Exists(Path.Combine(outputFolder, "missing-resource", "index.html")).ShouldBeTrue();

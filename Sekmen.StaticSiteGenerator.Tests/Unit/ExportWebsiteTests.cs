@@ -31,7 +31,7 @@ public class ExportWebsiteTests
         );
         
         // Act
-        await Functions.ExportWebsite(client, command);
+        await Generator.ExportWebsite(client, command);
         
         // Assert
         Directory.Exists(outputFolder).ShouldBeTrue();
@@ -71,7 +71,7 @@ public class ExportWebsiteTests
         );
         
         // Act
-        await Functions.ExportWebsite(client, command);
+        await Generator.ExportWebsite(client, command);
         
         // Assert
         File.Exists(Path.Combine(outputFolder, "404", "index.html")).ShouldBeTrue();
@@ -118,7 +118,7 @@ public class ExportWebsiteTests
         );
         
         // Act
-        await Functions.ExportWebsite(client, command);
+        await Generator.ExportWebsite(client, command);
         
         // Assert - should only have exported the home page
         Directory.EnumerateFiles(outputFolder, "*", SearchOption.AllDirectories).Count().ShouldBe(1);
@@ -166,7 +166,7 @@ public class ExportWebsiteTests
         );
         
         // Act
-        await Functions.ExportWebsite(client, command);
+        await Generator.ExportWebsite(client, command);
         
         // Assert
         File.Exists(Path.Combine(outputFolder, "index.html")).ShouldBeTrue();
@@ -220,7 +220,7 @@ public class ExportWebsiteTests
         );
         
         // Act - should complete without hanging
-        await Functions.ExportWebsite(client, command);
+        await Generator.ExportWebsite(client, command);
         
         // Assert
         File.Exists(Path.Combine(outputFolder, "page-a", "index.html")).ShouldBeTrue();
@@ -266,7 +266,7 @@ public class ExportWebsiteTests
         );
         
         // Act - should handle 404 gracefully
-        await Functions.ExportWebsite(client, command);
+        await Generator.ExportWebsite(client, command);
         
         // Assert - home page should still be exported
         File.Exists(Path.Combine(outputFolder, "index.html")).ShouldBeTrue();

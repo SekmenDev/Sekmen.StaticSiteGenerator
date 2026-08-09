@@ -32,7 +32,7 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert
         string cssFile = Path.Combine(outputFolder, "css", "style.css");
@@ -59,7 +59,7 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert
         string jsFile = Path.Combine(outputFolder, "js", "app.js");
@@ -86,7 +86,7 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert
         string imageFile = Path.Combine(outputFolder, "images", "logo.png");
@@ -113,7 +113,7 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert
         Directory.Exists(Path.Combine(outputFolder, "css")).ShouldBeTrue();
@@ -142,14 +142,14 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         );
         
         // Act - first export
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         DateTime firstExportTime = File.GetLastWriteTime(Path.Combine(outputFolder, "css", "style.css"));
         
         // Wait a bit to ensure timestamps would differ if file is rewritten
         await Task.Delay(100);
         
         // Act - second export
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         DateTime secondExportTime = File.GetLastWriteTime(Path.Combine(outputFolder, "css", "style.css"));
         
         // Assert - file should not be rewritten if size is same
@@ -175,7 +175,7 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         );
         
         // Act
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert
         string filePath = Path.Combine(outputFolder, "images", "file-name_123.png");
@@ -200,7 +200,7 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         );
         
         // Act - should not throw even though some resources are missing
-        await Functions.ExportWebsite(_client!, command);
+        await Generator.ExportWebsite(_client!, command);
         
         // Assert - page should exist, but missing resources shouldn't
         File.Exists(Path.Combine(outputFolder, "missing-resource", "index.html")).ShouldBeTrue();

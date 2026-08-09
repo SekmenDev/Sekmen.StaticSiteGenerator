@@ -52,7 +52,7 @@ public class UrlNormalizationTests
         );
         
         // Act
-        await Functions.ExportWebsite(client, command);
+        await Generator.ExportWebsite(client, command);
         
         // Assert - just verify it completes without throwing
         File.Exists(Path.Combine(outputFolder, "index.html")).ShouldBeTrue();
@@ -101,7 +101,7 @@ public class UrlNormalizationTests
         );
         
         // Act
-        await Functions.ExportWebsite(client, command);
+        await Generator.ExportWebsite(client, command);
         
         // Assert
         File.Exists(Path.Combine(outputFolder, "index.html")).ShouldBeTrue();
@@ -142,7 +142,7 @@ public class UrlNormalizationTests
         );
         
         // Act
-        await Functions.ExportWebsite(client, command);
+        await Generator.ExportWebsite(client, command);
         
         // Assert
         File.Exists(Path.Combine(outputFolder, expectedFile)).ShouldBeTrue();

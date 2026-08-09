@@ -42,7 +42,7 @@ public class StringReplacementTests
         );
         
         // Act
-        await Functions.ExportWebsite(client, command);
+        await Generator.ExportWebsite(client, command);
         
         // Assert
         string exportedHtml = await File.ReadAllTextAsync(Path.Combine(outputFolder, "index.html"));
@@ -85,7 +85,7 @@ public class StringReplacementTests
         );
         
         // Act
-        await Functions.ExportWebsite(client, command);
+        await Generator.ExportWebsite(client, command);
         
         // Assert - path should be normalized with replacement
         File.Exists(Path.Combine(outputFolder, "umbraco", "page", "index.html")).ShouldBeTrue();
@@ -133,7 +133,7 @@ public class StringReplacementTests
         );
         
         // Act
-        await Functions.ExportWebsite(client, command);
+        await Generator.ExportWebsite(client, command);
         
         // Assert
         string exportedHtml = await File.ReadAllTextAsync(Path.Combine(outputFolder, "index.html"));
@@ -178,7 +178,7 @@ public class StringReplacementTests
         );
         
         // Act
-        await Functions.ExportWebsite(client, command);
+        await Generator.ExportWebsite(client, command);
         
         // Assert
         string exportedHtml = await File.ReadAllTextAsync(Path.Combine(outputFolder, "index.html"));

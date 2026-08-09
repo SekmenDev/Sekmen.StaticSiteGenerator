@@ -29,7 +29,7 @@ public class ErrorHandlingTests
         
         // Act & Assert
         await Should.ThrowAsync<Exception>(async () =>
-            await Functions.ExportWebsite(client, command));
+            await Generator.ExportWebsite(client, command));
     }
     
     [Fact]
@@ -52,7 +52,7 @@ public class ErrorHandlingTests
         
         // Act & Assert
         await Should.ThrowAsync<HttpRequestException>(async () =>
-            await Functions.ExportWebsite(client, command));
+            await Generator.ExportWebsite(client, command));
     }
     
     [Fact]
@@ -94,7 +94,7 @@ public class ErrorHandlingTests
         );
         
         // Act - HtmlAgilityPack is forgiving with malformed HTML
-        await Functions.ExportWebsite(client, command);
+        await Generator.ExportWebsite(client, command);
         
         // Assert
         File.Exists(Path.Combine(outputFolder, "index.html")).ShouldBeTrue();
@@ -132,7 +132,7 @@ public class ErrorHandlingTests
         );
         
         // Act
-        await Functions.ExportWebsite(client, command);
+        await Generator.ExportWebsite(client, command);
         
         // Assert - home page should still be exported
         File.Exists(Path.Combine(outputFolder, "index.html")).ShouldBeTrue();
@@ -169,7 +169,7 @@ public class ErrorHandlingTests
         
         // Act & Assert
         await Should.ThrowAsync<Exception>(async () =>
-            await Functions.ExportWebsite(client, command));
+            await Generator.ExportWebsite(client, command));
     }
     
     [Fact]
@@ -208,7 +208,7 @@ public class ErrorHandlingTests
         );
         
         // Act
-        await Functions.ExportWebsite(client, command);
+        await Generator.ExportWebsite(client, command);
         
         // Assert - should still export despite non-standard target URL
         File.Exists(Path.Combine(outputFolder, "index.html")).ShouldBeTrue();
