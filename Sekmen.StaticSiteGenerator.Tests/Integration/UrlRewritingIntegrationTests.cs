@@ -25,7 +25,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         string targetUrl = "https://static.example.com/";
         
         ExportCommand command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: targetUrl,
             OutputFolder: outputFolder,
@@ -53,7 +53,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         string targetUrl = "https://cdn.example.com/";
         
         ExportCommand command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: targetUrl,
             OutputFolder: outputFolder,
@@ -79,7 +79,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         string targetUrl = "https://static.example.com/";
         
         ExportCommand command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: new[] { "/special-characters" },
             TargetUrl: targetUrl,
             OutputFolder: outputFolder,
@@ -105,7 +105,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         string targetUrl = "https://static.example.com/";
         
         ExportCommand command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: new[] { "/special-characters" },
             TargetUrl: targetUrl,
             OutputFolder: outputFolder,
@@ -130,7 +130,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
         ExportCommand command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
@@ -160,7 +160,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         string targetUrl = "https://cdn.example.com/";
         
         ExportCommand command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: targetUrl,
             OutputFolder: outputFolder,
@@ -186,7 +186,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         string targetUrl = "https://cdn.example.com/";
         
         ExportCommand command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: targetUrl,
             OutputFolder: outputFolder,
@@ -212,7 +212,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         string targetUrl = "https://cdn.example.com/";
         
         ExportCommand command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: targetUrl,
             OutputFolder: outputFolder,
@@ -238,7 +238,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         string targetUrl = "https://cdn.example.com/";
         
         ExportCommand command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: targetUrl,
             OutputFolder: outputFolder,
@@ -263,7 +263,7 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
         ExportCommand command = new ExportCommand(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: Array.Empty<string>(),
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
@@ -285,3 +285,5 @@ public class UrlRewritingIntegrationTests : IAsyncLifetime
         Directory.Delete(outputFolder, true);
     }
 }
+
+

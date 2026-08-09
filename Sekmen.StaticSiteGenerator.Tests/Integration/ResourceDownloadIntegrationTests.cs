@@ -24,7 +24,7 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
         ExportCommand command = new(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
@@ -51,7 +51,7 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
         ExportCommand command = new(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
@@ -64,7 +64,7 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         // Assert
         string jsFile = Path.Combine(outputFolder, "js", "app.js");
         File.Exists(jsFile).ShouldBeTrue();
-        string content = File.ReadAllText(jsFile);
+        string content = await File.ReadAllTextAsync(jsFile);
         content.ShouldContain("JS");
         
         // Cleanup
@@ -78,7 +78,7 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
         ExportCommand command = new(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
@@ -91,7 +91,7 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         // Assert
         string imageFile = Path.Combine(outputFolder, "images", "logo.png");
         File.Exists(imageFile).ShouldBeTrue();
-        byte[] bytes = File.ReadAllBytes(imageFile);
+        byte[] bytes = await File.ReadAllBytesAsync(imageFile);
         bytes.Length.ShouldBeGreaterThan(0);
         
         // Cleanup
@@ -105,7 +105,7 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
         ExportCommand command = new(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
@@ -134,7 +134,7 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
         ExportCommand command = new(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
+            SiteUrl: _fixture.BaseUrl,
             AdditionalUrls: [],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
@@ -154,6 +154,7 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         
         // Assert - file should not be rewritten if size is same
         // Note: This test may be flaky as it depends on timing and file timestamps
+        firstExportTime.ShouldBe(secondExportTime);
         
         // Cleanup
         Directory.Delete(outputFolder, true);
@@ -166,8 +167,8 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
         ExportCommand command = new(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
-            AdditionalUrls: new[] { "/special-characters" },
+            SiteUrl: _fixture.BaseUrl,
+            AdditionalUrls: ["/special-characters"],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
             StringReplacements: []
@@ -191,8 +192,8 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         
         ExportCommand command = new(
-            SiteUrl: _fixture.BaseUrl.Replace("https://", "").Replace("http://", "").TrimEnd('/'),
-            AdditionalUrls: new[] { "/missing-resource" },
+            SiteUrl: _fixture.BaseUrl,
+            AdditionalUrls: ["/missing-resource"],
             TargetUrl: "https://static.example.com/",
             OutputFolder: outputFolder,
             StringReplacements: []
@@ -209,3 +210,4 @@ public class ResourceDownloadIntegrationTests : IAsyncLifetime
         Directory.Delete(outputFolder, true);
     }
 }
+
