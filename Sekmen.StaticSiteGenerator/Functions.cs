@@ -74,13 +74,37 @@ public static class Functions
     {
         try
         {
-            // Fetch page content
+            // Check if this looks like a resource file by URL extension
+            Uri uri = new(pageUrl);
+            string path = uri.AbsolutePath.ToLower();
+            bool isResourceFile = path.EndsWith(".pdf") || path.EndsWith(".css") || path.EndsWith(".js") ||
+                                   path.EndsWith(".jpg") || path.EndsWith(".jpeg") || path.EndsWith(".png") ||
+                                   path.EndsWith(".gif") || path.EndsWith(".svg") || path.EndsWith(".ico");
+
+            if (isResourceFile)
+            {
+                // Download resource file directly
+                try
+                {
+                    byte[] fileContent = await client.GetByteArrayAsync(pageUrl);
+                    string filePath = Path.Combine(command.OutputFolder, uri.AbsolutePath.TrimStart('/'));
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
+                    await File.WriteAllBytesAsync(filePath, fileContent);
+                    Console.WriteLine($"File downloaded: {filePath}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to download resource {pageUrl}: {ex.Message}");
+                }
+                return null;
+            }
+
+            // Fetch page content as HTML
             string html = await client.GetStringAsync(pageUrl);
             HtmlDocument htmlDoc = new();
             htmlDoc.LoadHtml(html);
 
             // Determine output path
-            Uri uri = new(pageUrl);
             string pagePath = Path.Combine(command.OutputFolder, uri.AbsolutePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
             pagePath = command.StringReplacements.Aggregate(pagePath, (current, replacements) => current.Replace(replacements.OldValue, replacements.NewValue));
 
@@ -103,9 +127,6 @@ public static class Functions
                     current.Replace(replacements.OldValue, replacements.NewValue));
             await File.WriteAllTextAsync(pagePath, updatedHtml);
             Console.WriteLine($"Page saved: {pagePath}");
-
-            if (pagePath.Contains(".pdf"))
-                return null;
 
             // Extract and download resources
             HashSet<string> resourceUrls = ExtractResourceUrls(htmlDoc, uri);
@@ -200,7 +221,29 @@ public static class Functions
             foreach (Match match in matches)
             {
                 string url = match.Groups["url"].Value;
-                if (!string.IsNullOrWhiteSpace(url))
+                if (!string.IsNullOrWhiteSpace(url) &&
+                    !url.StartsWith("//") &&
+                    (url.StartsWith('/') || url.StartsWith(baseUri.AbsoluteUri)))
+                    resources.Add(url);
+            }
+        }
+
+        // Extract URLs from <style> tags
+        HtmlNodeCollection styleNodes = doc.DocumentNode.SelectNodes("//style") ?? new HtmlNodeCollection(null!);
+        foreach (HtmlNode styleNode in styleNodes)
+        {
+            string cssContent = styleNode.InnerText;
+            if (string.IsNullOrEmpty(cssContent))
+                continue;
+
+            // Extract all urls from CSS content using regex
+            MatchCollection matches = Regex.Matches(cssContent, """url\(['"]?(?<url>[^'"\)]+)['"]?\)""");
+            foreach (Match match in matches)
+            {
+                string url = match.Groups["url"].Value;
+                if (!string.IsNullOrWhiteSpace(url) &&
+                    !url.StartsWith("//") &&
+                    (url.StartsWith('/') || url.StartsWith(baseUri.AbsoluteUri)))
                     resources.Add(url);
             }
         }
@@ -230,20 +273,12 @@ public static class Functions
             string resourcePath = Path.Combine(outputFolder, resourceUri.AbsolutePath.TrimStart('/'));
             Directory.CreateDirectory(Path.GetDirectoryName(resourcePath)!);
 
-            // Check if the resource needs to be downloaded
-            using HttpRequestMessage headRequest = new(HttpMethod.Head, resourceUri);
-            using HttpResponseMessage headResponse = await client.SendAsync(headRequest);
-            headResponse.EnsureSuccessStatusCode();
-
-            // Get remote file size
-            long remoteSize = headResponse.Content.Headers.ContentLength ?? -1;
             bool shouldDownload = true;
 
-            // If file exists, compare sizes
-            if (File.Exists(resourcePath) && remoteSize != -1)
+            // If file already exists, skip downloading
+            if (File.Exists(resourcePath))
             {
-                long localSize = new FileInfo(resourcePath).Length;
-                shouldDownload = localSize != remoteSize;
+                shouldDownload = false;
             }
 
             if (shouldDownload)
