@@ -62,11 +62,11 @@ public class UrlNormalizationTests
     }
     
     [Theory]
-    [InlineData("/page?query=value", "/page?query=value")]
-    [InlineData("/page#anchor", "/page#anchor")]
-    [InlineData("/page?q=1&other=2", "/page?q=1&other=2")]
-    [InlineData("/special-chars_123.html", "/special-chars_123.html")]
-    public async Task ShouldPreserveSpecialCharactersInUrls(string href, string expectedInUrl)
+    [InlineData("/page?query=value")]
+    [InlineData("/page#anchor")]
+    [InlineData("/page?q=1&other=2")]
+    [InlineData("/special-chars_123.html")]
+    public async Task ShouldPreserveSpecialCharactersInUrls(string href)
     {
         // Arrange
         string html = $"""
@@ -149,5 +149,38 @@ public class UrlNormalizationTests
         
         // Cleanup
         Directory.Delete(outputFolder, true);
+    }
+
+    [Fact]
+    public void UpdateHtmlUrls_ShouldNotModifyExternalProtocolRelativeUrls()
+    {
+        // Arrange
+        const string inputHtml = """
+            <head>
+                <link rel="canonical" href="//localhost:44362/">
+                <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lora">
+                <script src="//www.googletagmanager.com/gtag/js"></script>
+                <link href="/assets/css/styles.css" rel="stylesheet">
+            </head>
+            """;
+
+        ExportCommand command = new(
+            SiteUrl: "https://localhost:44362/",
+            AdditionalUrls: [],
+            TargetUrl: "https://huseyinsekmenoglu.net/",
+            OutputFolder: "out",
+            StringReplacements: []
+        );
+
+        // Act
+        string result = UrlHelpers.UpdateHtmlUrls(inputHtml, "https://localhost:44362/", command);
+
+        // Assert
+        result.ShouldContain("href=\"https://huseyinsekmenoglu.net/\"");
+        result.ShouldContain("href=\"//fonts.googleapis.com/css?family=Lora\"");
+        result.ShouldContain("src=\"//www.googletagmanager.com/gtag/js\"");
+        result.ShouldContain("href=\"https://huseyinsekmenoglu.net/assets/css/styles.css\"");
+        result.ShouldNotContain("https://huseyinsekmenoglu.net//fonts");
+        result.ShouldNotContain("https://huseyinsekmenoglu.net//www.googletagmanager");
     }
 }
