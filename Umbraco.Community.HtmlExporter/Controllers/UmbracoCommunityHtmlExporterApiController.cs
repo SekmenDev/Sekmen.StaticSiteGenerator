@@ -37,7 +37,7 @@ public class UmbracoCommunityHtmlExporterApiController(
     {
         using HttpClient client = httpClientFactory.CreateClient();
 
-        await Functions.ExportWebsite(client, request);
+        await Generator.ExportWebsite(client, request);
 
         return Content("Done.");
     }

@@ -3,8 +3,8 @@
 @addTagHelper *, Clean.Core
 
 @{
-    var row = Model.Content as IconLinkRow;
-    var settings = Model.Settings as IconLinkRowSettings;
+    IconLinkRow? row = Model.Content as IconLinkRow;
+    IconLinkRowSettings? settings = Model.Settings as IconLinkRowSettings;
     if (settings?.Hide ?? false) { return; }
 }
 

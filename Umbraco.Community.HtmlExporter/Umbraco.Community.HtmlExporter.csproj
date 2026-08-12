@@ -14,15 +14,15 @@
         <Copyright>Hüseyin Sekmenoğlu @ 2025</Copyright>
         <PackageProjectUrl>https://marketplace.umbraco.com/package/umbraco.community.htmlexporter</PackageProjectUrl>
         <RepositoryUrl>https://github.com/sekmenhuseyin/Sekmen.StaticSiteGenerator</RepositoryUrl>
-        <Version>1.3.1</Version>
-        <AssemblyVersion>1.3.1</AssemblyVersion>
-        <FileVersion>1.3.1</FileVersion>
+        <Version>1.5.0</Version>
+        <AssemblyVersion>1.5.0</AssemblyVersion>
+        <FileVersion>1.5.0</FileVersion>
         <PackageReadmeFile>readme.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageIcon>logo.png</PackageIcon>
         <PackageTags>Umbraco Umbraco-Marketplace HTML Export static web</PackageTags>
         <SignAssembly>true</SignAssembly>
-        <AssemblyOriginatorKeyFile>D:\Proton\My files\About Me\Documents\sekmen.dev nuget package signature.snk</AssemblyOriginatorKeyFile>
+        <AssemblyOriginatorKeyFile>D:\Proton\My files\About Company\Sekmen.Dev\sekmen.dev nuget package signature.snk</AssemblyOriginatorKeyFile>
         <PublicSign>true</PublicSign>
     </PropertyGroup>
 

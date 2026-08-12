@@ -1,14 +1,15 @@
 ﻿@inherits UmbracoViewPage<BlockListItem>
 @using Umbraco.Cms.Core.Models.Blocks
 @using Clean.Core.Extensions
+@using Umbraco.Cms.Core.Models
 
 @{
-    var row = Model.Content as ImageCarouselRow;
-    var settings = Model.Settings as ImageCarouselRowSettings;
+    ImageCarouselRow? row = Model.Content as ImageCarouselRow;
+    ImageCarouselRowSettings? settings = Model.Settings as ImageCarouselRowSettings;
     if (settings?.Hide ?? false) { return; }
     if (row.Images == null || !row.Images.Any()) { return; }
 
-    var spacingClasses = "";
+    string spacingClasses = "";
     if (Model.Settings is ISpacingProperties spacing)
     {
         spacingClasses = Clean.Core.Helpers.SpacingHelper.GetSpacingClasses(spacing.PaddingTop, spacing.PaddingBottom, spacing.PaddingLeft, spacing.PaddingRight, spacing.MarginTop, spacing.MarginBottom, spacing.MarginLeft, spacing.MarginRight);
@@ -19,7 +20,7 @@
     <div class="col-md-12 column">
         <div class="swiffy-slider slider-item-reveal slider-nav-round slider-item-ratio slider-item-ratio-4x3" id="slider-@(row.Key.ToString())">
             <ul class="slider-container">
-                @foreach (var item in row.Images)
+                @foreach (MediaWithCrops item in row.Images)
                 {
                     <li><img src="@item.Url()" loading="lazy" alt="@item.Content.GetAltText()"></li>
                 }
@@ -32,7 +33,7 @@
                 <button class="active" aria-label="Go to slide"></button>
                 @if (row.Images.Count() > 1)
                 {
-                    foreach (var image in row.Images.Skip(1))
+                    foreach (MediaWithCrops image in row.Images.Skip(1))
                     {
                         <button aria-label="Go to slide"></button>
                     }
@@ -43,7 +44,7 @@
                 <button class="active" aria-label="Go to slide"></button>
                 @if (row.Images.Count() > 1)
                 {
-                    foreach (var image in row.Images.Skip(1))
+                    foreach (MediaWithCrops image in row.Images.Skip(1))
                     {
                         <button aria-label="Go to slide"></button>
                     }

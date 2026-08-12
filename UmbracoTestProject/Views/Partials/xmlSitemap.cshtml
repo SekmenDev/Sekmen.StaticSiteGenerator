@@ -1,12 +1,12 @@
 ﻿@model IPublishedContent
 @{
 
-    var homePage = Model.AncestorOrSelf("home");
+    IPublishedContent homePage = Model.AncestorOrSelf("home");
     void RenderChildPages(IEnumerable<IPublishedContent> contentItems)
     {
         if (contentItems.Any())
         {
-            foreach (var content in contentItems.Where(x => x.IsVisible()))
+            foreach (IPublishedContent content in contentItems.Where(x => x.IsVisible()))
             {
                 if (!(content.HasProperty("excludeFromSitemap") && content.Value<bool>("excludeFromSitemap")))
                 {

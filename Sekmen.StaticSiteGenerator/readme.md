@@ -1,247 +1,316 @@
-﻿# Sekmen.StaticSiteGenerator
+<div align="center">
 
-High‑level, flexible static site export utility for .NET and Umbraco.
+# 🚀 Sekmen.StaticSiteGenerator
 
-This library (NuGet package: `Sekmen.StaticSiteGenerator`) crawls a dynamic Umbraco (or any standard HTML) website, follows internal links, downloads referenced assets, rewrites domain references, and produces a portable static snapshot you can deploy to any static host (Azure Static Web Apps, GitHub Pages, Netlify, S3, Cloudflare Pages, etc.).
+**High-performance, flexible static site export utility for .NET & Umbraco CMS.**
 
-It is also shipped together with an Umbraco backoffice plugin (NuGet: `Umbraco.Community.HtmlExporter`) that adds a dashboard UI & API endpoints so editors can trigger an export without touching code.
+[![NuGet Version](https://img.shields.io/nuget/v/Sekmen.StaticSiteGenerator?style=for-the-badge&logo=nuget&color=004880)](https://www.nuget.org/packages/Sekmen.StaticSiteGenerator)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/Sekmen.StaticSiteGenerator?style=for-the-badge&logo=nuget&color=004880)](https://www.nuget.org/packages/Sekmen.StaticSiteGenerator)
+[![.NET Version](https://img.shields.io/badge/.NET-10.0%20%7C%209.0-512BD4?style=for-the-badge&logo=dotnet)](https://dotnet.microsoft.com/)
+[![Umbraco Compatibility](https://img.shields.io/badge/Umbraco-16%2B-blueviolet?style=for-the-badge&logo=umbraco)](https://umbraco.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen?style=for-the-badge&logo=github)](https://github.com/sekmenhuseyin/Sekmen.StaticSiteGenerator)
 
----
-## Packages
-| Package | Purpose |
-|---------|---------|
-| `Sekmen.StaticSiteGenerator` | Core export logic (crawler + downloader + rewriting). |
-| `Umbraco.Community.HtmlExporter` | Umbraco backoffice dashboard + API wrapper around the core. |
-
----
-## Key Features
-- Sitemap + on‑the‑fly discovery (loads `sitemap.xml` then continues via internal `<a>` links)
-- Recursive asset collection (CSS, JS, images, inline style `background-image: url(...)` references)
-- Intelligent resource re-download check via HEAD (skips unchanged assets where size matches)
-- Domain & path rewriting (replaces the original origin with a target/static domain you specify)
-- Additional manual URL injection (export pages not linked or not in sitemap)
-- Automatic `index.html` generation for folder style URLs
-- Custom ordered string replacements (filenames + HTML content) via `StringReplacements[]`
-- Basic normalization for Umbraco specific paths (`umbraco-cms` → `umbraco`)
-- MIT licensed & simple, dependency-light (only HtmlAgilityPack)
+<p align="center">
+  <a href="#-quick-start-tldr">Quick Start</a> •
+  <a href="#-key-features">Key Features</a> •
+  <a href="#-architecture--execution-flow">Architecture</a> •
+  <a href="#%EF%B8%8F-public-api-reference">Public API</a> •
+  <a href="#-umbraco-backoffice-plugin">Umbraco Plugin</a> •
+  <a href="#-roadmap">Roadmap</a>
+</p>
 
 ---
-## How It Works (Core Flow)
-1. Build a queue: seed with `sitemap.xml` entries + any `AdditionalUrls` you provide.
-2. Pop a URL, download HTML, rewrite & save.
-3. Parse internal `<a href>` links, enqueue new same‑host URLs.
-4. Extract asset URLs (link/script/img/inline style url()).
-5. Download assets (only if new or changed size).
-6. Repeat until queue is empty.
+
+</div>
+
+## 🌐 Overview
+
+`Sekmen.StaticSiteGenerator` is an asynchronous, dependency-light .NET engine designed to crawl dynamic web applications (such as **Umbraco CMS**) and export them into static, portable snapshots. 
+
+It crawls `sitemap.xml`, discovers internal hyperlinks on the fly, extracts and downloads static assets (CSS, JS, images, fonts, inline `background-image: url(...)` resources), rewrites origin links to target static host domain names, and structures directory outputs for static hosting environments like **Azure Static Web Apps**, **GitHub Pages**, **Netlify**, **Cloudflare Pages**, or **AWS S3**.
+
+It also powers **`Umbraco.Community.HtmlExporter`**, a companion Umbraco backoffice extension that equips CMS content editors with a visual export dashboard and authenticated API endpoints.
 
 ---
-## Installation
-### Core Library
-```
-dotnet add package Sekmen.StaticSiteGenerator
-```
-### Umbraco Plugin (Dashboard)
-```
-dotnet add package Umbraco.Community.HtmlExporter
-```
-(Requires an Umbraco 16+ style project with backoffice extensions; ensure you restore & rebuild so client assets are generated.)
+
+## 📦 Packages Ecosystem
+
+| Package Name | Purpose & Description | Badges |
+| :--- | :--- | :--- |
+| [`Sekmen.StaticSiteGenerator`](file:///d:/Projects/Umbraco.StaticSiteGenerator/Sekmen.StaticSiteGenerator) | Core export engine (crawler, link rewriting, asset extractor, file writer). | [![NuGet](https://img.shields.io/nuget/v/Sekmen.StaticSiteGenerator?style=flat-square&color=004880)](https://www.nuget.org/packages/Sekmen.StaticSiteGenerator) |
+| `Umbraco.Community.HtmlExporter` | Umbraco Backoffice dashboard UI & authenticated management API wrapper. | [![NuGet](https://img.shields.io/nuget/v/Umbraco.Community.HtmlExporter?style=flat-square&color=blueviolet)](https://www.nuget.org/packages/Umbraco.Community.HtmlExporter) |
 
 ---
-## Public API (Core)
-### ExportCommand
-| Property | Type | Description |
-|----------|------|-------------|
-| `SiteUrl` | `string` | Host *without* protocol (e.g. `example.com`). `https://` is automatically prepended in current implementation. |
-| `AdditionalUrls` | `string[]` | Extra absolute or relative URLs/paths to ensure export even if not linked/sitemap. |
-| `TargetUrl` | `string` | Replacement origin (e.g. `https://static.example.com/`). Used for rewriting references in saved HTML. Include trailing slash for consistency. |
-| `OutputFolder` | `string` | Local folder where the static site will be generated. Created if missing. |
-| `StringReplacements` | `StringReplacements[]` | Ordered list of additional string replacements applied to: (1) the computed output file path, then (2) the final HTML/content after built‑in rewrites. Each pair is simple `OldValue` → `NewValue` replacement (case sensitive). |
 
-Supporting record:
+## 🔥 Key Features
+
+- 🗺️ **Sitemap Seed + Dynamic Discovery**: Reads initial routes from `sitemap.xml` and dynamically discovers unlisted internal pages via `<a href="...">` crawling.
+- 🎨 **Deep Asset Extraction**: Uses `HtmlAgilityPack` and regex parsers to download `<link>`, `<script>`, `<img>`, and inline/embedded CSS `url(...)` declarations.
+- ⚡ **Resource Reuse & Caching**: Avoids duplicate network calls by skipping already downloaded assets on disk.
+- 🔗 **Intelligent Domain & Path Rewriting**: Automatically updates root-relative, protocol-relative, and full-domain URL references to target static origins.
+- 🎯 **Manual Page Injection (`AdditionalUrls`)**: Force export unlinked pages, dynamic endpoints, error pages (e.g. `/404`, `/500`), or secret paths.
+- 📁 **Clean Folder-Style Structure**: Converts directory paths (e.g. `/about/us`) to `index.html` folder structures (`/about/us/index.html`).
+- 🔀 **Ordered Two-Phase String Replacements**: Apply custom `StringReplacements[]` transforms sequentially across computed file system paths first, then full HTML/content payloads second.
+- 🛡️ **Lightweight & Modular**: Clean separation of concerns with minimal dependencies (only `HtmlAgilityPack`).
+
+---
+
+## 🔄 Architecture & Execution Flow
+
+```mermaid
+graph TD
+    A["🌐 Dynamic Site / Umbraco CMS"] -->|1. Parse sitemap.xml| B["📋 Page Processing Queue"]
+    C["🎯 AdditionalUrls Configuration"] -->|2. Enqueue Custom Paths| B
+    
+    B -->|3. Dequeue Page URL| D["⚡ Engine Processor (Generator)"]
+    D -->|4. Check Extension| E{"Is Static Resource?"}
+    
+    E -->|Yes| F["📥 Resource Downloader"]
+    E -->|No| G["📄 HTML Document Fetcher"]
+    
+    G -->|5. Extract Asset URLs| H["🎨 Asset Extractor (CSS/JS/Img)"]
+    H -->|Download Assets| F
+    F -->|Save Static Assets| I["📁 Static Output Folder"]
+    
+    G -->|6. Discover Internal <a href> Links| B
+    G -->|7. Rewrite Links & Apply StringReplacements| J["📝 HTML Link & Path Rewriter"]
+    J -->|8. Save index.html File| I
 ```
-public record StringReplacements(string OldValue, string NewValue);
-```
 
-### Method
-`await Functions.ExportWebsite(HttpClient client, ExportCommand command);`
+### Detailed Pipeline Steps
+1. **Queue Initialization**: Seeds queue with entries from `sitemap.xml` and any configured `AdditionalUrls`.
+2. **Page Crawling**: Dequeues each URL, checks for duplication, and fetches content asynchronously.
+3. **Asset Mining**: Scans the HTML DOM for linked stylesheets, scripts, images, and CSS `url(...)` references.
+4. **Asset Download**: Resolves relative asset paths against the page origin and downloads missing files to disk.
+5. **Hyperlink Discovery**: Finds internal same-host `<a href>` links and enqueues unvisited pages dynamically.
+6. **URL & Content Rewriting**: Rewrites origin base URLs to `TargetUrl`, normalizes paths, and executes user-defined `StringReplacements`.
+7. **Disk Output**: Writes folder-structured `index.html` files and assets into `OutputFolder`.
 
-#### Minimal Example (Console)
+---
+
+## 🚀 Quick Start (TL;DR)
+
 ```csharp
 using Sekmen.StaticSiteGenerator;
 
-var http = new HttpClient();
-var cmd = new ExportCommand(
-    SiteUrl: "myumbracosite.com",          // no protocol
-    AdditionalUrls: new[] { "/404", "/health" },
-    TargetUrl: "https://static.myumbracosite.com/", // will replace absolute refs
-    OutputFolder: Path.Combine(Environment.CurrentDirectory, "export"),
-    StringReplacements: new []
-    {
-        new StringReplacements("umbraco-cms", "umbraco"),
-        new StringReplacements("Umbraco CMS", "Umbraco")
-    }
-);
+// 1. Instantiate HTTP client
+using var client = new HttpClient();
 
-await Functions.ExportWebsite(http, cmd);
-Console.WriteLine("Export complete.");
-```
-
----
-### Custom String Replacements
-Use `StringReplacements` to perform deterministic, ordered find/replace operations after the default rewrite logic. Typical use cases:
-- Normalizing CMS specific path or branding strings
-- Injecting a CDN hostname into residual inline references missed by primary rewrite
-- Renaming generated folder/file segments (e.g. remove `umbraco-cms` from paths)
-
-Rules & Behavior:
-- Applied to output path first (affects where file is written)
-- Then applied to full HTML/content string
-- Executed in the order supplied (later replacements see earlier changes)
-- Pure string operations (no regex)
-
-Example – add analytics snippet placeholder replacement:
-```csharp
-var cmd = new ExportCommand(
-    SiteUrl: "example.com",
-    AdditionalUrls: Array.Empty<string>(),
-    TargetUrl: "https://static.example.com/",
-    OutputFolder: "./out",
+// 2. Define export parameters
+var command = new ExportCommand(
+    SiteUrl: "myumbracosite.com",
+    AdditionalUrls: new[] { "/404", "/search" },
+    TargetUrl: "https://static.myumbracosite.com/",
+    OutputFolder: Path.Combine(Directory.GetCurrentDirectory(), "export_output"),
     StringReplacements: new[]
     {
-        new StringReplacements("{{ANALYTICS}}", "<script src=\"/analytics.js\"></script>"),
-        new StringReplacements("umbraco-cms", "umbraco")
+        new StringReplacements("umbraco-cms", "umbraco"),
+        new StringReplacements("Umbraco CMS", "Umbraco Site")
+    }
+);
+
+// 3. Trigger site export
+await Generator.ExportWebsite(client, command);
+Console.WriteLine("🎉 Static site export completed successfully!");
+```
+
+---
+
+## 📥 Installation
+
+### Core Library (.NET Projects)
+```bash
+dotnet add package Sekmen.StaticSiteGenerator
+```
+
+### Umbraco Backoffice Plugin
+```bash
+dotnet add package Umbraco.Community.HtmlExporter
+```
+> [!NOTE]
+> Requires Umbraco 16+ project with backoffice extensions enabled. Ensure you build/restore so client dashboard assets are properly published.
+
+---
+
+## 🛠️ Public API Reference
+
+### 1. `ExportCommand` (Record Configuration)
+
+| Property | Type | Default / Required | Description |
+| :--- | :--- | :--- | :--- |
+| `SiteUrl` | `string` | **Required** | Source website domain or URL (e.g., `example.com` or `https://example.com/`). Protocol is auto-normalized. |
+| `AdditionalUrls` | `string[]` | `[]` | Extra relative or absolute URL paths to include in the export queue even if not linked or in sitemap. |
+| `TargetUrl` | `string` | **Required** | Destination static origin URL (e.g., `https://static.example.com/`). Used for rewriting HTML links. |
+| `OutputFolder` | `string` | **Required** | Local directory path where static files will be exported. Created automatically if missing. |
+| `StringReplacements` | `StringReplacements[]` | `[]` | Ordered collection of search-and-replace pairs applied to output paths and HTML content. |
+
+### 2. `StringReplacements` (Record Pair)
+
+```csharp
+public record StringReplacements(string OldValue, string NewValue);
+```
+
+### 3. Core Engine Classes
+
+| Class | Type | Purpose | Key Methods |
+| :--- | :--- | :--- | :--- |
+| [`Generator`](file:///d:/Projects/Umbraco.StaticSiteGenerator/Sekmen.StaticSiteGenerator/Generator.cs#L6) | `static class` | Main orchestrator managing the crawling lifecycle. | `ExportWebsite(client, command)` |
+| [`Downloader`](file:///d:/Projects/Umbraco.StaticSiteGenerator/Sekmen.StaticSiteGenerator/Downloader.cs#L6) | `static class` | Handles binary & text asset retrieval with skip-if-exists caching logic. | `DownloadResourceFile`, `DownloadResource` |
+| [`Extractor`](file:///d:/Projects/Umbraco.StaticSiteGenerator/Sekmen.StaticSiteGenerator/Extractor.cs#L6) | `static class` | DOM & CSS parser extracting URLs from `<link>`, `<script>`, `<img>`, and `url(...)`. | `ExtractResourceUrls` |
+| [`UrlHelpers`](file:///d:/Projects/Umbraco.StaticSiteGenerator/Sekmen.StaticSiteGenerator/UrlHelpers.cs#L6) | `static class` | Sitemap parser, URL queue builder, internal link discovery, and HTML rewriter. | `EnqueueSitemapUrls`, `UpdateHtmlUrls`, `EnqueueInternalLinks` |
+| [`UrlValidation`](file:///d:/Projects/Umbraco.StaticSiteGenerator/Sekmen.StaticSiteGenerator/UrlValidation.cs#L6) | `static class` | URL pattern validation, extension checks, scheme detection, and normalization. | `NormalizeSourceUrl`, `IsResourceFile`, `IsInternalLink` |
+| [`Logger`](file:///d:/Projects/Umbraco.StaticSiteGenerator/Sekmen.StaticSiteGenerator/Logger.cs#L6) | `static class` | Lightweight console logger for information and exception diagnostics. | `Info`, `Error` |
+
+---
+
+## 🪄 Custom String Replacements
+
+Custom `StringReplacements` allow you to apply deterministic search-and-replace transformations during the export process.
+
+> [!IMPORTANT]
+> **Execution Order & Rules:**
+> 1. Replacements are executed **in the exact array order** supplied.
+> 2. Phase 1: Applied to computed **file system paths** (affects output directory & file names).
+> 3. Phase 2: Applied to full **HTML content strings** prior to saving.
+
+```csharp
+var command = new ExportCommand(
+    SiteUrl: "example.com",
+    AdditionalUrls: Array.Empty<string>(),
+    TargetUrl: "https://cdn.example.com/",
+    OutputFolder: "./dist",
+    StringReplacements: new[]
+    {
+        // 1. Sanitize CMS branding path segments in file output & links
+        new StringReplacements("umbraco-cms", "umbraco"),
+        
+        // 2. Inject an analytics snippet placeholder
+        new StringReplacements("<!-- {{ANALYTICS}} -->", "<script src=\"https://cdn.example.com/analytics.js\"></script>")
     }
 );
 ```
 
-If you have no custom replacements, pass `Array.Empty<StringReplacements>()` or `new StringReplacements[0]`.
+> [!TIP]
+> If no custom replacements are needed, pass `Array.Empty<StringReplacements>()`.
 
 ---
-## Umbraco Plugin
-After installing `Umbraco.Community.HtmlExporter`, the package adds:
-- Backoffice dashboard (App_Plugins) bundling a UI allowing you to enter export parameters.
-- API endpoints (secured by backoffice auth & content section policy):
-  - `GET /umbracocommunityhtmlexporter/api/v1.0/get-data` → dashboard config & domains
-  - `POST /umbracocommunityhtmlexporter/api/v1.0/export-website` (multipart/form-data for the `ExportCommand` fields)
 
-### Sample cURL
+## 🔌 Umbraco Backoffice Plugin
+
+The companion package **`Umbraco.Community.HtmlExporter`** adds a full-featured dashboard inside the Umbraco Backoffice under the Content section.
+
+### Backoffice Endpoints
+
+- **`GET /umbraco/umbracocommunityhtmlexporter/api/v1/get-data`**  
+  Retrieves initial dashboard configuration and available site domains.
+- **`POST /umbraco/umbracocommunityhtmlexporter/api/v1/export-website`**  
+  Triggers a background export execution via `ExportCommand` payload (`multipart/form-data`).
+
+### Example cURL Request
+
 ```bash
 curl -X POST \
-  -H "Cookie: auth cookie here" \
-  -F SiteUrl=mysite.local \
-  -F AdditionalUrls=/custom-page \
-  -F AdditionalUrls=/another-page \
-  -F TargetUrl=https://static.mysite.local/ \
-  -F OutputFolder=C:\\exports\\mysite \
-  -F StringReplacements[0].OldValue=umbraco-cms \
-  -F StringReplacements[0].NewValue=umbraco \
-  https://mysite.local/umbracocommunityhtmlexporter/api/v1.0/export-website
+  -H "Cookie: UMB_UCONTEXT=your_authenticated_umbraco_backoffice_cookie" \
+  -F "SiteUrl=mysite.local" \
+  -F "AdditionalUrls=/custom-landing" \
+  -F "AdditionalUrls=/privacy-policy" \
+  -F "TargetUrl=https://static.mysite.local/" \
+  -F "OutputFolder=C:\exports\mysite" \
+  -F "StringReplacements[0].OldValue=umbraco-cms" \
+  -F "StringReplacements[0].NewValue=umbraco" \
+  https://mysite.local/umbraco/umbracocommunityhtmlexporter/api/v1/export-website
 ```
-(You must be an authenticated backoffice user; obtain cookies via normal login.)
 
 ---
-## Rewriting & Replacement Order Details
-1. Built‑in replacements:
-   - Prefix root‑relative `"/` and `'/` references with `TargetUrl`
-   - Replace full `sourceUrl` (`https://{SiteUrl}/`) with `TargetUrl`
-2. Apply each `StringReplacements` pair in sequence to the output path (directory/file name)
-3. Apply each pair again to the full HTML/content payload
 
-Implication: you can purposefully chain transformations (e.g. first collapse a verbose path segment, then swap a remaining token produced by the first step).
+## 💡 Troubleshooting Matrix
 
----
-## Limitations / Known Gaps
-- Assumes sitemap lives at `https://{SiteUrl}/sitemap.xml` and is reachable.
-- Currently forces HTTPS when constructing source URL.
-- No parallel throttling controls (a burst of sequential requests; could be slower for large sites).
-- Does not parse JS-generated navigation or SPA routes.
-- Asset change detection only by Content-Length (size) not hash.
-- No exclusion / allow lists yet.
+| Symptom | Root Cause | Recommended Action |
+| :--- | :--- | :--- |
+| **Output folder is empty** | Unhandled early exception (e.g. invalid `SiteUrl` or unreachable host). | Check console log output or verify host connectivity. |
+| **Specific pages missing from export** | Page is not in `sitemap.xml` and has no internal `<a href>` links. | Pass the missing paths in `AdditionalUrls`. |
+| **Broken relative assets / 404s on host** | Missing trailing slash in `TargetUrl` parameter. | Ensure `TargetUrl` ends with a `/` (e.g., `https://static.example.com/`). |
+| **Assets downloading repeatedly** | Asset paths have dynamic query parameters or altered hashes. | Verify URL structure or normalize paths via replacements. |
+| **StringReplacements not taking effect** | Misordered replacement sequence or case mismatch. | Check the order of `StringReplacements` array entries. |
 
 ---
-## Roadmap Ideas
-- [ ] Protocol support in `SiteUrl` (respect http/https as provided)
-- [ ] Configurable concurrency (degree of parallelism)
-- [ ] Exclude / include glob patterns
-- [ ] Hash-based unchanged asset detection
-- [ ] Export manifest JSON (list of pages & assets)
-- [ ] CLI tool wrapper (`dotnet tool install`)
-- [ ] Stronger URL normalization & canonicalization
-- [ ] Structured HTML rewrite (DOM aware) for safer replacements
 
-Feel free to open issues or PRs to discuss and contribute.
+## ⚡ Limitations & Known Gaps
+
+> [!WARNING]
+> - **Sitemap Requirement**: Expects a valid `sitemap.xml` file at `https://{SiteUrl}/sitemap.xml`.
+> - **HTTPS Scheme Default**: `NormalizeSourceUrl` defaults non-schemed inputs to HTTPS.
+> - **Sequential Processing**: Currently processes requests sequentially without parallel concurrency limits.
+> - **Client-Side Rendering (SPA)**: Does not execute JavaScript or crawl dynamic SPA routes generated strictly on the client.
 
 ---
-## Development (Repo)
-1. Clone & restore
-```
+
+## 🗺️ Roadmap
+
+- [ ] 🌐 Protocol-aware `SiteUrl` handling (respect `http://` when explicitly specified)
+- [ ] ⚡ Configurable concurrency & parallel request pipeline
+- [ ] 🔍 Glob pattern inclusions/exclusions (`*.pdf`, `/admin/*`)
+- [ ] 🔑 Hash-based asset content verification
+- [ ] 📜 JSON export manifest generation (`manifest.json`)
+- [ ] 💻 Global CLI wrapper (`dotnet tool install Sekmen.StaticSiteGenerator.Cli`)
+- [ ] 🧱 Structural DOM-aware rewrite engine for safer HTML transformations
+
+---
+
+## 🛠️ Local Development & Contributing
+
+### Prerequisites
+- .NET 10.0 / 9.0 SDK
+- Node.js (for Umbraco Backoffice client asset compilation)
+
+### 1. Clone & Restore
+```bash
 git clone https://github.com/sekmenhuseyin/Sekmen.StaticSiteGenerator.git
 cd Sekmen.StaticSiteGenerator
- dotnet restore
+dotnet restore
 ```
-2. Build solution
+
+### 2. Build Solution
+```bash
+dotnet build Sekmen.StaticSiteGenerator.slnx
 ```
-dotnet build
-```
-3. (Plugin only) Build client assets – the MSBuild targets automatically run `npm i` + `npm run build` in `Umbraco.Community.HtmlExporter/Client` during pack/build. To trigger manually:
-```
+
+### 3. Build Client Assets (Umbraco Plugin)
+```bash
 cd Umbraco.Community.HtmlExporter/Client
 npm install
 npm run build
+cd ../..
 ```
-4. Run test Umbraco site: open `UmbracoTestProject` (configure connection strings etc.)
 
----
-## Packaging
+### 4. Run Test Suite
+```bash
+dotnet test Sekmen.StaticSiteGenerator.slnx
 ```
+
+### 5. Create NuGet Packages
+```bash
 dotnet pack -c Release
 ```
-Outputs `.nupkg` for both packages (with embedded README & icon). Ensure the signing key path is valid or update `AssemblyOriginatorKeyFile` properties if forking.
+*Outputs `.nupkg` artifacts with embedded documentation and icons.*
 
 ---
-## Extensibility Ideas
-You can wrap `Functions.ExportWebsite` to:
-- Inject custom headers (User-Agent, auth tokens)
-- Add retry logic / resilience policies (Polly)
-- Preprocess/postprocess HTML (minification, analytics injection)
-- Generate a search index or RSS/JSON feed
+
+## 🔒 Security Best Practices
+
+> [!CAUTION]
+> - **Endpoint Authorization**: Never expose the export POST API endpoint publicly without proper authentication; unauthorized access can lead to high server load and disk exhaustion.
+> - **Output Path Sanitization**: Always validate and sanitize `OutputFolder` values to protect against path traversal vulnerabilities in multi-tenant environments.
 
 ---
-## Troubleshooting
-| Symptom | Possible Cause | Action |
-|---------|----------------|-------|
-| Empty export folder | Exception early (check console output) | Run under debugger / add logging |
-| Some pages missing | Not linked internally nor in sitemap | Add to `AdditionalUrls` |
-| Broken relative links | Missing trailing slash in `TargetUrl` | Ensure `TargetUrl` ends with `/` |
-| Assets 404 on host | Rewritten to wrong domain | Verify `TargetUrl` correctness |
-| Slow export | Large asset count, sequential fetch | Future: add parallelism (or fork & add tasks) |
-| Replacement not applied | Order conflict or missing pair | Inspect `StringReplacements` order |
 
----
-## Security Notes
-- Do not expose the export POST endpoint publicly without auth; it can be abused for bandwidth & disk usage.
-- Validate / sanitize the `OutputFolder` if exposing in multi-tenant scenarios to avoid path traversal.
+## 📜 License & Credits
 
----
-## Contributing
-1. Fork & create a feature branch
-2. Make changes (+ optional unit / integration tests)
-3. Run build & manual smoke export
-4. Open PR with clear description
+Distributed under the **MIT License**. Created & maintained by **Hüseyin Sekmenoğlu**.
 
----
-## License
-MIT © Hüseyin Sekmenoğlu
+<div align="center">
 
----
-## Quick Start TL;DR
-```csharp
-await Functions.ExportWebsite(new HttpClient(), new ExportCommand(
-    SiteUrl: "example.com",
-    AdditionalUrls: Array.Empty<string>(),
-    TargetUrl: "https://static.example.com/",
-    OutputFolder: "./out",
-    StringReplacements: new [] { new StringReplacements("umbraco-cms", "umbraco") }
-));
-```
-Deploy the ./out folder to any static host – done.
+Made with ❤️ for the **.NET** & **Umbraco** Community.
+
+</div>

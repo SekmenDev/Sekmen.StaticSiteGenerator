@@ -1,0 +1,277 @@
+namespace Sekmen.StaticSiteGenerator.Tests.Unit;
+
+public class ExportWebsiteTests
+{
+    [Fact]
+    public async Task ExportWebsite_WithValidSitemap_ShouldLoadAndParseUrls()
+    {
+        // Arrange
+        const string sitemapXml = """
+                                  <?xml version="1.0" encoding="UTF-8"?>
+                                  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                                      <url><loc>https://example.com/page1</loc></url>
+                                      <url><loc>https://example.com/page2</loc></url>
+                                  </urlset>
+                                  """;
+        
+        HttpClientMockBuilder mockBuilder = new HttpClientMockBuilder()
+            .WithGetResponse("https://example.com/sitemap.xml", sitemapXml, "application/xml")
+            .WithGetResponse("https://example.com/page1", "<html><body><a href='/page2'>Link</a></body></html>")
+            .WithGetResponse("https://example.com/page2", "<html><body></body></html>");
+        
+        HttpClient client = mockBuilder.Build();
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        
+        ExportCommand command = new ExportCommand(
+            SiteUrl: "example.com",
+            AdditionalUrls: [],
+            TargetUrl: "https://static.example.com/",
+            OutputFolder: outputFolder,
+            StringReplacements: []
+        );
+        
+        // Act
+        await Generator.ExportWebsite(client, command);
+        
+        // Assert
+        Directory.Exists(outputFolder).ShouldBeTrue();
+        File.Exists(Path.Combine(outputFolder, "page1", "index.html")).ShouldBeTrue();
+        File.Exists(Path.Combine(outputFolder, "page2", "index.html")).ShouldBeTrue();
+        
+        // Cleanup
+        Directory.Delete(outputFolder, true);
+    }
+    
+    [Fact]
+    public async Task ExportWebsite_WithAdditionalUrls_ShouldIncludeThem()
+    {
+        // Arrange
+        const string sitemapXml = """
+                            <?xml version="1.0" encoding="UTF-8"?>
+                            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                                <url><loc>https://example.com/</loc></url>
+                            </urlset>
+                            """;
+        
+        HttpClientMockBuilder mockBuilder = new HttpClientMockBuilder()
+            .WithGetResponse("https://example.com/sitemap.xml", sitemapXml, "application/xml")
+            .WithGetResponse("https://example.com/", "<html><body></body></html>")
+            .WithGetResponse("https://example.com/404", "<html><body>Not Found</body></html>")
+            .WithGetResponse("https://example.com/robots.txt", "User-agent: *");
+        
+        HttpClient client = mockBuilder.Build();
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        
+        ExportCommand command = new ExportCommand(
+            SiteUrl: "example.com",
+            AdditionalUrls: ["/404", "/robots.txt"],
+            TargetUrl: "https://static.example.com/",
+            OutputFolder: outputFolder,
+            StringReplacements: Array.Empty<StringReplacements>()
+        );
+        
+        // Act
+        await Generator.ExportWebsite(client, command);
+        
+        // Assert
+        File.Exists(Path.Combine(outputFolder, "404", "index.html")).ShouldBeTrue();
+        File.Exists(Path.Combine(outputFolder, "robots.txt")).ShouldBeTrue();
+        
+        // Cleanup
+        Directory.Delete(outputFolder, true);
+    }
+    
+    [Fact]
+    public async Task ExportWebsite_WithExternalLinks_ShouldIgnoreThem()
+    {
+        // Arrange
+        const string html = """
+                            <html>
+                            <body>
+                                <a href="https://external.com/page">External</a>
+                                <a href="//cdn.example.com/resource">Protocol Relative</a>
+                                <a href="http://example.com/internal">HTTP</a>
+                            </body>
+                            </html>
+                            """;
+        
+        const string sitemapXml = """
+                            <?xml version="1.0" encoding="UTF-8"?>
+                            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                                <url><loc>https://example.com/</loc></url>
+                            </urlset>
+                            """;
+        
+        HttpClientMockBuilder mockBuilder = new HttpClientMockBuilder()
+            .WithGetResponse("https://example.com/sitemap.xml", sitemapXml, "application/xml")
+            .WithGetResponse("https://example.com/", html);
+        
+        HttpClient client = mockBuilder.Build();
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        
+        ExportCommand command = new ExportCommand(
+            SiteUrl: "example.com",
+            AdditionalUrls: [],
+            TargetUrl: "https://static.example.com/",
+            OutputFolder: outputFolder,
+            StringReplacements: Array.Empty<StringReplacements>()
+        );
+        
+        // Act
+        await Generator.ExportWebsite(client, command);
+        
+        // Assert - should only have exported the home page
+        Directory.EnumerateFiles(outputFolder, "*", SearchOption.AllDirectories).Count().ShouldBe(1);
+        
+        // Cleanup
+        Directory.Delete(outputFolder, true);
+    }
+    
+    [Fact]
+    public async Task ExportWebsite_WithAnchorAndMailtoLinks_ShouldIgnoreThem()
+    {
+        // Arrange
+        string html = """
+                      <html>
+                      <body>
+                          <a href="#section">Anchor</a>
+                          <a href="mailto:test@example.com">Email</a>
+                          <a href="tel:+1234567890">Phone</a>
+                          <a href="/about">Valid</a>
+                      </body>
+                      </html>
+                      """;
+        
+        string sitemapXml = """
+                            <?xml version="1.0" encoding="UTF-8"?>
+                            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                                <url><loc>https://example.com/</loc></url>
+                            </urlset>
+                            """;
+        
+        HttpClientMockBuilder mockBuilder = new HttpClientMockBuilder()
+            .WithGetResponse("https://example.com/sitemap.xml", sitemapXml, "application/xml")
+            .WithGetResponse("https://example.com/", html)
+            .WithGetResponse("https://example.com/about", "<html><body></body></html>");
+        
+        HttpClient client = mockBuilder.Build();
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        
+        ExportCommand command = new ExportCommand(
+            SiteUrl: "example.com",
+            AdditionalUrls: Array.Empty<string>(),
+            TargetUrl: "https://static.example.com/",
+            OutputFolder: outputFolder,
+            StringReplacements: Array.Empty<StringReplacements>()
+        );
+        
+        // Act
+        await Generator.ExportWebsite(client, command);
+        
+        // Assert
+        File.Exists(Path.Combine(outputFolder, "index.html")).ShouldBeTrue();
+        File.Exists(Path.Combine(outputFolder, "about", "index.html")).ShouldBeTrue();
+        
+        // Cleanup
+        Directory.Delete(outputFolder, true);
+    }
+    
+    [Fact]
+    public async Task ExportWebsite_WithCircularLinks_ShouldNotHangDueToVisitedTracking()
+    {
+        // Arrange
+        string pageA = """
+                       <html>
+                       <body>
+                           <a href="/page-b">Go to B</a>
+                       </body>
+                       </html>
+                       """;
+        
+        string pageB = """
+                       <html>
+                       <body>
+                           <a href="/page-a">Go to A</a>
+                       </body>
+                       </html>
+                       """;
+        
+        string sitemapXml = """
+                            <?xml version="1.0" encoding="UTF-8"?>
+                            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                                <url><loc>https://example.com/page-a</loc></url>
+                            </urlset>
+                            """;
+        
+        HttpClientMockBuilder mockBuilder = new HttpClientMockBuilder()
+            .WithGetResponse("https://example.com/sitemap.xml", sitemapXml, "application/xml")
+            .WithGetResponse("https://example.com/page-a", pageA)
+            .WithGetResponse("https://example.com/page-b", pageB);
+        
+        HttpClient client = mockBuilder.Build();
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        
+        ExportCommand command = new ExportCommand(
+            SiteUrl: "example.com",
+            AdditionalUrls: Array.Empty<string>(),
+            TargetUrl: "https://static.example.com/",
+            OutputFolder: outputFolder,
+            StringReplacements: Array.Empty<StringReplacements>()
+        );
+        
+        // Act - should complete without hanging
+        await Generator.ExportWebsite(client, command);
+        
+        // Assert
+        File.Exists(Path.Combine(outputFolder, "page-a", "index.html")).ShouldBeTrue();
+        File.Exists(Path.Combine(outputFolder, "page-b", "index.html")).ShouldBeTrue();
+        
+        // Cleanup
+        Directory.Delete(outputFolder, true);
+    }
+    
+    [Fact]
+    public async Task ExportWebsite_WithMissingPageUrl_ShouldHandleGracefully()
+    {
+        // Arrange
+        string html = """
+                      <html>
+                      <body>
+                          <a href="/missing">Missing Page</a>
+                      </body>
+                      </html>
+                      """;
+        
+        string sitemapXml = """
+                            <?xml version="1.0" encoding="UTF-8"?>
+                            <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+                                <url><loc>https://example.com/</loc></url>
+                            </urlset>
+                            """;
+        
+        HttpClientMockBuilder mockBuilder = new HttpClientMockBuilder()
+            .WithGetResponse("https://example.com/sitemap.xml", sitemapXml, "application/xml")
+            .WithGetResponse("https://example.com/", html)
+            .WithNotFoundResponse("https://example.com/missing");
+        
+        HttpClient client = mockBuilder.Build();
+        string outputFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        
+        ExportCommand command = new ExportCommand(
+            SiteUrl: "example.com",
+            AdditionalUrls: Array.Empty<string>(),
+            TargetUrl: "https://static.example.com/",
+            OutputFolder: outputFolder,
+            StringReplacements: Array.Empty<StringReplacements>()
+        );
+        
+        // Act - should handle 404 gracefully
+        await Generator.ExportWebsite(client, command);
+        
+        // Assert - home page should still be exported
+        File.Exists(Path.Combine(outputFolder, "index.html")).ShouldBeTrue();
+        
+        // Cleanup
+        Directory.Delete(outputFolder, true);
+    }
+}

@@ -28,7 +28,7 @@
                         @if (Model.Categories != null && Model.Categories.Any())
                         {
                             <span class="mt-4 d-block"></span>
-                            @foreach (var category in Model.Categories.Select(x => x.Name).OrderBy(y => y))
+                            @foreach (string category in Model.Categories.Select(x => x.Name).OrderBy(y => y))
                             {
                                 <span class="badge rounded-pill bg-light text-dark border-dark border-5">@category</span>
                             }
